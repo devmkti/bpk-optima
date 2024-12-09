@@ -1,0 +1,15 @@
+# Virtual environment
+venv/
+
+# Cache dan file sementara
+__pycache__/
+*.pyc
+*.pyo
+
+# File konfigurasi pribadi
+.env
+
+# File IDE/editor
+.vscode/
+.idea/
+*.swp
