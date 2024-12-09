@@ -1,2 +1,2 @@
 requirements:
-install flask, pulp, scipy, numpu, pandas
+install flask, pulp, scipy, numpy, pandas
