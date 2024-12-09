@@ -9,7 +9,7 @@ app = Flask(__name__)
 
 @app.route("/")
 def base():
-  return render_template("home.html")
+  return render_template("base.html")
 
 @app.route("/home")
 def home():
@@ -23,11 +23,11 @@ def addNewProject():
 def listOfProject():
   return render_template("list-of-project.html")
 
-@app.route("/calculateBWM", methods=['POST'])
-def calculate():
+# @app.route("/calculateBWM", methods=['POST'])
+# def calculate():
 
-@app.route("/calculateBWMBayesian", methods=['POST'])
-def calculate():
+# @app.route("/calculateBWMBayesian", methods=['POST'])
+# def calculate():
 
 if __name__ == "__main__":
     app.run(debug=True)
