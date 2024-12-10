@@ -7,7 +7,7 @@
 <!-- Modifikasi di sini -->
 {% block content %}
 
-<h4> Tambah project Baru</h4> 
+<h4> Tambah Proyek Baru</h4> 
 <div class="row">
     <div class="col-xl">
         <div class="card mb-4">
@@ -18,31 +18,33 @@
             <div class="card-body">
                 <form id="project-form">
                     <div class="mb-3">
-                        <label class="form-label" for="basic-default-fullname">Nama Project</label>
+                        <label class="form-label" for="basic-default-fullname">Nama Proyek</label>
                         <input type="text" class="form-control" id="basic-default-fullname"
                             placeholder="Penilaian Kinerja" />
                     </div>
                     <div class="mb-3">
-                        <label class="form-label" for="basic-default-message">Deskripsi Project</label>
-                        <textarea id="basic-default-message" class="form-control" placeholder=""></textarea>
+                        <label class="form-label" for="basic-default-message">Deskripsi Proyek</label>
+                        <textarea id="basic-default-message" class="form-control" placeholder="Deskripsi Proyek"></textarea>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label" for="num-criteria">Jumlah Kriteria</label>
-                        <input type="number" class="form-control" id="num-criteria" placeholder="9" />
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label" for="basic-default-respondents">Jumlah Responden</label>
-                        <input type="number" class="form-control" id="basic-default-respondents" placeholder="5" />
-                    </div>
-
-                    <!-- Container untuk menambahkan kriteria -->
 
                     <div class="mb-3">
                         <label for="flatpickr-range" class="form-label">Periode Partisipan</label>
                         <input type="text" class="form-control" placeholder="YYYY-MM-DD to YYYY-MM-DD"
                             id="flatpickr-range" />
                     </div>
+
+                    <div class="mb-3">
+                        <label class="form-label" for="basic-default-respondents">Jumlah Responden</label>
+                        <input type="number" class="form-control" id="basic-default-respondents" placeholder="Masukan jumlah responden yang akan berpartisipasi" />
+                    </div>
+
+                    <!-- Container untuk menambahkan kriteria -->
+
+                    <div class="mb-3">
+                        <label class="form-label" for="num-criteria">Jumlah Kriteria</label>
+                        <input type="number" class="form-control" id="num-criteria" placeholder="Masukan jumlah kriteria yang akan dinilai" />
+                    </div>
+                    
                     <div class="card mt-4" id="criteria-card">
                         <div class="card-body">
                             <div id="criteria-container"></div>
@@ -61,6 +63,7 @@
 <script>
     // Tunggu sampai DOM selesai dimuat
     document.addEventListener('DOMContentLoaded', function () {
+        document.getElementById('criteria-card').style.visibility = 'hidden'
         var numCriteriaInput = document.getElementById('num-criteria');
         var criteriaContainer = document.getElementById('criteria-container');
         var criteriaCard = document.getElementById('criteria-card'); // Card untuk kriteria
@@ -92,6 +95,7 @@
 
             // Menampilkan card kriteria hanya jika ada kriteria yang dimasukkan
             if (numCriteria > 0) {
+                document.getElementById('criteria-card').style.visibility = 'visible'
                 criteriaCard.style.display = 'block'; // Menampilkan card kriteria
             } else {
                 criteriaCard.style.display = 'none'; // Menyembunyikan card jika tidak ada kriteria
