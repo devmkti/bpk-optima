@@ -1,5 +1,4 @@
 # Virtual environment
-venv/
 
 # Cache dan file sementara
 __pycache__/
