@@ -42,19 +42,19 @@
     <li class="menu-header small text-uppercase">
       <span class="menu-header-text" data-i18n="Menu">Menu</span>
     </li>
-    <li class="menu-item">
+    <li class="menu-item {% if request.path == '/home' %}active{% endif %}">
       <a href="{{ url_for('home') }}" class="menu-link">
         <i class="menu-icon tf-icons ti ti-messages"></i>
         <div data-i18n="Beranda">Beranda</div>
       </a>
     </li>
-    <li class="menu-item">
+    <li class="menu-item {% if request.path == '/addNewProject' %}active{% endif %}">
       <a href="{{ url_for('addNewProject') }}" class="menu-link">
         <i class="menu-icon tf-icons ti ti-mail"></i>
         <div data-i18n="Tambah Proyek Baru">Tambah Proyek Baru</div>
       </a>
     </li>
-    <li class="menu-item">
+    <li class="menu-item {% if request.path == '/listOfProject' %}active{% endif %}">
       <a href="{{ url_for('listOfProject') }}" class="menu-link">
         <i class="menu-icon tf-icons ti ti-mail"></i>
         <div data-i18n="Daftar Proyek">Daftar Proyek</div>
