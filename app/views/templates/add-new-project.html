@@ -8,7 +8,7 @@
 {% block content %}
 
 <h4> Tambah Proyek Baru</h4> 
-<div class="row">
+<div class="col-lg-12">
     <div class="col-xl">
         <div class="card mb-4">
             <div class="card-header d-flex justify-content-between align-items-center">
@@ -18,13 +18,13 @@
             <div class="card-body">
                 <form id="project-form">
                     <div class="mb-3">
-                        <label class="form-label" for="basic-default-fullname">Nama Proyek</label>
-                        <input type="text" class="form-control" id="basic-default-fullname"
+                        <label class="form-label" for="nama_proyek">Nama Proyek</label>
+                        <input type="text" class="form-control" id="nama_proyek"
                             placeholder="Penilaian Kinerja" />
                     </div>
                     <div class="mb-3">
-                        <label class="form-label" for="basic-default-message">Deskripsi Proyek</label>
-                        <textarea id="basic-default-message" class="form-control" placeholder="Deskripsi Proyek"></textarea>
+                        <label class="form-label" for="deskripsi_proyek">Deskripsi Proyek</label>
+                        <textarea id="deskripsi_proyek" class="form-control" placeholder="Deskripsi Proyek"></textarea>
                     </div>
 
                     <div class="mb-3">
@@ -34,15 +34,15 @@
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label" for="basic-default-respondents">Jumlah Responden</label>
-                        <input type="number" class="form-control" id="basic-default-respondents" placeholder="Masukan jumlah responden yang akan berpartisipasi" />
+                        <label class="form-label" for="jumlah_responden">Jumlah Responden</label>
+                        <input type="number" class="form-control" id="jumlah_responden" placeholder="Masukan jumlah responden yang akan berpartisipasi" />
                     </div>
 
                     <!-- Container untuk menambahkan kriteria -->
 
                     <div class="mb-3">
-                        <label class="form-label" for="num-criteria">Jumlah Kriteria</label>
-                        <input type="number" class="form-control" id="num-criteria" placeholder="Masukan jumlah kriteria yang akan dinilai" />
+                        <label class="form-label" for="jumlah_kriteria">Jumlah Kriteria</label>
+                        <input type="number" class="form-control" id="jumlah_kriteria" placeholder="Masukan jumlah kriteria yang akan dinilai" />
                     </div>
                     
                     <div class="card mt-4" id="criteria-card">
@@ -64,7 +64,7 @@
     // Tunggu sampai DOM selesai dimuat
     document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('criteria-card').style.visibility = 'hidden'
-        var numCriteriaInput = document.getElementById('num-criteria');
+        var numCriteriaInput = document.getElementById('jumlah_kriteria');
         var criteriaContainer = document.getElementById('criteria-container');
         var criteriaCard = document.getElementById('criteria-card'); // Card untuk kriteria
 
@@ -88,6 +88,8 @@
                 input.type = 'text';
                 input.classList.add('form-control');
                 input.placeholder = 'Masukkan Kriteria ' + (i + 1);
+                input.id = 'kriteria_' + (i+1)
+                input.name = 'kriterias'
                 inputGroup.appendChild(input);
 
                 criteriaContainer.appendChild(inputGroup);
@@ -102,6 +104,42 @@
             }
         });
     });
+
+    async function simpanProyek() {
+      document.querySelectorAll(".insertedContent").forEach(el => el.remove())
+      
+      var nama_proyek = document.getElementById("nama_proyek").value
+      var deskripsi_proyek = document.getElementById("deskripsi_proyek").value
+      var periode_partisipan = document.getElementById("periode_partisipan").value
+      var jumlah_responden = document.getElementById("jumlah_responden").value
+      var jumlah_kriteria = document.getElementById("jumlah_kriteria").value
+
+      var goals = document.querySelector('input[name="goals"]:checked').value
+      debugger
+      
+      var response = await fetch('/store_project', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({criteria, bo, wo, best, worst, goals})
+      })
+
+      var result = await response.json()
+      var weights = JSON.parse(result.weights)
+      
+      if(weights.length > 0){
+        document.getElementById("div-results").style = "display:block"
+        document.getElementById("div-weight").style = "display:block"
+        document.getElementById("div-epsilon").style = "display:block"
+        document.getElementById("div-cr").style = "display:block"
+        for (let i = (weights.length-1); i >= 0; i--) {
+          var el = weights[i];
+          document.getElementById("weight").insertAdjacentHTML("afterend","<div class ='insertedContent'><p><strong>w(g"+(i+1)+"): </strong>"+el+"</p><div><br>")
+        }
+        // document.getElementById("epsilon").insertAdjacentHTML("afterend","<div class ='insertedContent'><p>"+result.epsilon+"</p><div><br>")
+        document.getElementById("epsilon").insertAdjacentHTML("afterend","<div class ='insertedContent'><p>"+result.ksi+"</p><div><br>")
+        document.getElementById("cr").insertAdjacentHTML("afterend","<div class ='insertedContent'><p>"+result.cr+"</p><div><br>")
+      }
+    }
 </script>
 
 {% endblock %}
