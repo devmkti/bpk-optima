@@ -42,7 +42,7 @@
     <li class="menu-header small text-uppercase">
       <span class="menu-header-text" data-i18n="Menu">Menu</span>
     </li>
-    <li class="menu-item {% if request.path == '/home' %}active{% endif %}">
+    <li class="menu-item {% if request.path == '/home' or request.path == '/' %}active{% endif %}">
       <a href="{{ url_for('main.home') }}" class="menu-link">
         <i class="menu-icon tf-icons ti ti-messages"></i>
         <div data-i18n="Beranda">Beranda</div>

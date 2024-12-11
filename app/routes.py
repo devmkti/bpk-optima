@@ -1,11 +1,11 @@
 from flask import Blueprint, render_template, request, jsonify
-from controllers.proyek_controller import create_project
+from app.controllers.proyek_controller import create_project
 
 main_bp = Blueprint('main', __name__, template_folder='views/templates')
 
 @main_bp.route("/")
-def base():
-  return render_template("base.html")
+def index():
+  return render_template("home.html")
 
 @main_bp.route("/home")
 def home():
