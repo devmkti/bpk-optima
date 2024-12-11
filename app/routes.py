@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, jsonify
-from services.crud import create_project
+from controllers.proyek_controller import create_project
 
 main_bp = Blueprint('main', __name__, template_folder='views/templates')
 
