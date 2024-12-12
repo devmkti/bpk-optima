@@ -24,7 +24,7 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label" for="basic-default-message">Deskripsi Proyek</label>
-                        <textarea id="basic-default-message" class="form-control" name="deskripsi"
+                        <textarea id="basic-default-message" class="form-control" name="deskripsi_proyek"
                             placeholder="Deskripsi Proyek"></textarea>
                     </div>
                     
@@ -102,26 +102,7 @@
         });
     });
 
-    document.getElementById('project-form').addEventListener('submit', function(event) {
-    event.preventDefault();
-    var formData = new FormData(this);
 
-    var criteriaContainer = document.getElementById('criteria-container');
-    var criteria = criteriaContainer.children;
-
-    for (var i = 0; i < criteria.length; i++) {
-        var input = criteria[i].children[1];
-        formData.append('kriteria[]', input.value);
-    }
-
-    fetch('/proyek', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => console.log(data))
-    .catch(error => console.error(error));
-});
     
 </script>
 

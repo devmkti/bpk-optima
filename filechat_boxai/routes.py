@@ -1,4 +1,3 @@
-from datetime import datetime
 from flask import Blueprint, render_template, request, jsonify
 from app.controllers.proyek_controller import create_project
 from app.models.model import Proyek, Kriteria
@@ -22,36 +21,30 @@ def addNewProject():
 def listOfProject():
   return render_template("list-of-project.html")
 
-# @main_bp.route('/store_project', methods=['POST'])
-# def store_project():
-#     data = request.json
-#     result = create_project(data)
-#     return jsonify(result)
+@main_bp.route('/store_project', methods=['POST'])
+def store_project():
+    data = request.json
+    result = create_project(data)
+    return jsonify(result)
 
 @main_bp.route('/proyek', methods=['POST'])
 def tambah_proyek():
     try:
         nama_proyek = request.form['nama_proyek']
-        deskripsi = request.form['deskripsi']
-        periode = request.form['periode_mulai']
+        deskripsi_proyek = request.form['deskripsi_proyek']
+        periode_mulai = request.form['periode_mulai']
         jumlah_responden = request.form['jumlah_responden']
         jumlah_kriteria = request.form['jumlah_kriteria']
         kriteria = request.form.getlist('kriteria[]')
 
-        # Pisahkan tanggal awal dan tanggal akhir
-        periode_awal, periode_akhir = periode.split(' to ')
-
         # Proses data yang dikirimkan
         proyek = Proyek(
             nama_proyek=nama_proyek,
-            deskripsi=deskripsi,
-            periode_mulai=periode_awal,
-            periode_selesai=periode_akhir,
+            deskripsi_proyek=deskripsi_proyek,
+            periode_mulai=periode_mulai,
             jumlah_responden=jumlah_responden,
-            jumlah_kriteria=jumlah_kriteria,
-            created_at=datetime.now()
+            jumlah_kriteria=jumlah_kriteria
         )
-        
         db.session.add(proyek)
         db.session.flush()
 

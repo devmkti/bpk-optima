@@ -4,7 +4,7 @@ from app.database import db
 def create_project(data):
     try:
         # Add project to the database
-        proyek = Proyek(nama_proyek=data.get('nama_proyek',''), deskripsi=data.get('deskripsi',''), jumlah_kriteria=data.get('jumlah_kriteria',0), jumlah_responden=data.get('jumlah_responden',0), periode_mulai=data.get('periode_mulai'), periode_selesai=data.get('periode_selesai'), status=data.get('status',''), created_by=data.get('created_by',''), created_at=data.get('created_at',''))
+        proyek = Proyek(description=data.get('description', ''), nama_proyek=data.get('nama_proyek',''), deskripsi=data.get('deskripsi',''), jumlah_kriteria=data.get('jumlah_kriteria',0), jumlah_responden=data.get('jumlah_responden',0), periode_mulai=data.get('periode_mulai'), periode_selesai=data.get('periode_selesai'), status=data.get('status',''), created_by=data.get('created_by',''), created_at=data.get('created_at',''))
         db.session.add(proyek)
         db.session.flush()  # Get the project ID before committing
 
