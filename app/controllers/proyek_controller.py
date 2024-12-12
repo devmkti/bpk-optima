@@ -1,20 +1,43 @@
 from app.models.model import Proyek, Kriteria
 from app.database import db
+from datetime import datetime
 
-def create_project(data):
+def simpan_proyek(request):
     try:
-        # Add project to the database
-        proyek = Proyek(nama_proyek=data.get('nama_proyek',''), deskripsi=data.get('deskripsi',''), jumlah_kriteria=data.get('jumlah_kriteria',0), jumlah_responden=data.get('jumlah_responden',0), periode_mulai=data.get('periode_mulai'), periode_selesai=data.get('periode_selesai'), status=data.get('status',''), created_by=data.get('created_by',''), created_at=data.get('created_at',''))
-        db.session.add(proyek)
-        db.session.flush()  # Get the project ID before committing
+        nama_proyek = request.form['nama_proyek']
+        deskripsi = request.form['deskripsi']
+        periode = request.form['periode_mulai']
+        jumlah_responden = request.form['jumlah_responden']
+        jumlah_kriteria = request.form['jumlah_kriteria']
+        kriteria = request.form.getlist('kriteria[]')
 
-        # Add proyek detail (kriteria) to the database
-        for kriteria_ in data.get('kriteria', []):
-            kriteria = Kriteria(id_proyek=proyek.id, nama_kriteria=kriteria_, deskripsi='')
-            db.session.add(kriteria)
+        # Pisahkan tanggal awal dan tanggal akhir
+        periode_awal, periode_akhir = periode.split(' to ')
+
+        # Proses data yang dikirimkan
+        proyek = Proyek(
+            nama_proyek=nama_proyek,
+            deskripsi=deskripsi,
+            periode_mulai=periode_awal,
+            periode_selesai=periode_akhir,
+            jumlah_responden=jumlah_responden,
+            jumlah_kriteria=jumlah_kriteria,
+            created_at=datetime.now()
+        )
+        
+        db.session.add(proyek)
+        db.session.flush()
+
+        # Tambahkan kriteria ke dalam database
+        for kriteria_ in kriteria:
+            kriteria_db = Kriteria(
+                id_proyek=proyek.id,
+                nama_kriteria=kriteria_
+            )
+            db.session.add(kriteria_db)
 
         db.session.commit()
-        return {"message": "Berhasil menyimpan data proyek!", "id_proyek": proyek.id}
+        return {"message": "Proyek berhasil ditambahkan", "id_proyek": proyek.id}
     except Exception as e:
         db.session.rollback()
         return {"error": str(e)}
