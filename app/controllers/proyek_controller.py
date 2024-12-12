@@ -1,6 +1,28 @@
-from app.models.model import Proyek, Kriteria
+from flask import Blueprint, jsonify
+# from app.models.model import Proyeks, Kriteria
 from app.database import db
 from datetime import datetime
+# from app.models.model import Proyek
+from app.models.proyek import Proyek
+from app.models.kriteria import Kriteria
+from sqlalchemy.dialects.postgresql import UUID
+
+def get_proyek():
+    proyek_data = Proyek.query.all()
+    result = [
+        {
+            'id': p.id,
+            'nama_proyek': p.nama_proyek,
+            'deskripsi': p.deskripsi,
+            'jumlah_kriteria': p.jumlah_kriteria,
+            'jumlah_responden': p.jumlah_responden,
+            'periode_mulai': p.periode_mulai.strftime('%Y-%m-%d'),
+            'periode_selesai': p.periode_selesai.strftime('%Y-%m-%d')
+        }
+        for p in proyek_data
+    ]
+    # return jsonify(result)
+    return result
 
 def simpan_proyek(request):
     try:

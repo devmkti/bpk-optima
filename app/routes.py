@@ -1,8 +1,12 @@
 from datetime import datetime
 from flask import Blueprint, render_template, request, jsonify
 from app.controllers.proyek_controller import *
-from app.models.model import Proyek, Kriteria
+from app.models.proyek import Proyek
+from app.models.kriteria import Kriteria
 from app.database import db
+
+from flask import Flask, render_template, request, redirect, url_for, flash
+from flask_sqlalchemy import SQLAlchemy
 
 main_bp = Blueprint('main', __name__, template_folder='views/templates')
 
@@ -26,3 +30,16 @@ def listOfProject():
 def tambah_proyek():
     result = simpan_proyek(request)
     return jsonify(result)
+
+@main_bp.route('/api/proyek', methods=['GET'])
+def get_project():
+    # data = request.json
+    # result = get_proyek(data)
+    result = get_proyek()
+    return jsonify(result)
+
+# Route untuk melihat detail proyek
+@main_bp.route('/proyek/<int:id>/view', methods=['POST'])
+def view_proyek(id):
+    proyek = Proyek.query.get_or_404(id)
+    return render_template('view_proyek.html', proyek=proyek)
