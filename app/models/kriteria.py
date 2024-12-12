@@ -1,6 +1,7 @@
 import uuid
 from sqlalchemy.dialects.postgresql import UUID
 from app.database import db
+import uuid
 
 class Kriteria(db.Model):
     __tablename__ = 'kriteria'

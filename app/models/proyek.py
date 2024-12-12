@@ -1,6 +1,7 @@
 from app import db
 from sqlalchemy.dialects.postgresql import UUID
 from app.database import db
+import uuid
 
 class Proyek(db.Model):
     __tablename__ = 'proyek'
