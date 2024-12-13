@@ -26,6 +26,10 @@ def addNewProject():
 def listOfProject():
   return render_template("list-of-project.html")
 
+@main_bp.route("/listProjectOwner")
+def listProjectOwner():
+  return render_template("list-project-owner.html")
+
 @main_bp.route('/proyek', methods=['POST'])
 def tambah_proyek():
     result = simpan_proyek(request)
@@ -43,3 +47,7 @@ def get_project():
 def view_proyek(id):
     proyek = Proyek.query.get_or_404(id)
     return render_template('view_proyek.html', proyek=proyek)
+
+@main_bp.route('/api/proyek/<uuid:project_id>', methods=['GET'])
+def api_get_project_details(project_id):
+    return jsonify(get_project_details(project_id))

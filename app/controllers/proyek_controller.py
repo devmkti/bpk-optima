@@ -63,3 +63,20 @@ def simpan_proyek(request):
     except Exception as e:
         db.session.rollback()
         return {"error": str(e)}
+    
+def get_project_details(project_id):
+    try:
+        proyek = Proyek.query.get(project_id)
+        if not proyek:
+            return {"error": "Project not found"}, 404
+        
+        kriteria_list = Kriteria.query.filter_by(id_proyek=proyek.id).all()
+        kriteria_data = [{"nama_kriteria": k.nama_kriteria} for k in kriteria_list]
+
+        return {
+            "nama_proyek": proyek.nama_proyek,
+            "deskripsi": proyek.deskripsi,
+            "kriteria": kriteria_data
+        }
+    except Exception as e:
+        return {"error": str(e)}, 500
