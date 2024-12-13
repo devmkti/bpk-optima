@@ -8,7 +8,7 @@
 {% block content %}
 
 <h4> Tambah Proyek Baru</h4> 
-<div class="row">
+<div class="col-lg-12">
     <div class="col-xl">
         <div class="card mb-4">
             <div class="card-header d-flex justify-content-between align-items-center">
@@ -103,25 +103,26 @@
     });
 
     document.getElementById('project-form').addEventListener('submit', function(event) {
-    event.preventDefault();
-    var formData = new FormData(this);
+        event.preventDefault();
+        var formData = new FormData(this);
 
-    var criteriaContainer = document.getElementById('criteria-container');
-    var criteria = criteriaContainer.children;
+        var criteriaContainer = document.getElementById('criteria-container');
+        var criteria = criteriaContainer.children;
 
-    for (var i = 0; i < criteria.length; i++) {
-        var input = criteria[i].children[1];
-        formData.append('kriteria[]', input.value);
-    }
+        for (var i = 0; i < criteria.length; i++) {
+            var input = criteria[i].children[1];
+            formData.append('kriteria[]', input.value);
+        }
 
-    fetch('/proyek', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => console.log(data))
-    .catch(error => console.error(error));
-});
+        fetch('/proyek', {
+            method: 'POST',
+            body: formData
+        }).then(response => function (){
+            response.json()
+            // Display a success toast, with a title
+            toastr.success('Data berhasil disimpan!', 'Sukses!')
+        }).then(data => console.log(data)).catch(error => console.error(error));
+    });
     
 </script>
 
