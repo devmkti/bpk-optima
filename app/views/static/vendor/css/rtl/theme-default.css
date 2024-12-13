@@ -1436,7 +1436,9 @@ li.ui-timepicker-selected,
   background: #f4f4f5;
 }
 html:not(.layout-menu-collapsed) .bg-menu-theme .menu-inner .menu-item:not(.active) > .menu-link:hover, .layout-menu-hover.layout-menu-collapsed .bg-menu-theme .menu-inner .menu-item:not(.active) > .menu-link:hover {
-  background: #f8f8f8;
+  /* background: #f8f8f8; */
+  /* background: #cbe7d1; */
+  background: #d3f1bc
 }
 .bg-menu-theme .menu-inner .menu-sub .menu-item:not(.active) > .menu-link::before {
   color: #a5a3ae !important;
