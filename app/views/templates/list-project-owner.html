@@ -1,0 +1,117 @@
+<!-- Memanggil base template -->
+{% extends 'base.html' %}
+
+<!-- Judul Halaman -->
+{% block title %}List Of Project{% endblock %}
+
+<!-- Konten Halaman -->
+{% block content %}
+<!-- Modifikasi di sini -->
+<div class="card">
+    <div class="container mt-5">
+        <h2>Daftar Proyek</h2>
+        <table id="proyekTable" class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Nama Proyek</th>
+                    <th>Deskripsi</th>
+                    <th>Periode Mulai</th>
+                    <th>Periode Selesai</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+<!-- Modal untuk Detail Proyek -->
+<div class="modal fade" id="projectDetailModal" tabindex="-1" aria-labelledby="projectDetailModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <h4 class="modal-title" id="projectDetailModalLabel">Detail Proyek</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h6>Nama Proyek: <span id="modalProjectName"></span></h6>
+                <h6>Deskripsi: <span id="modalProjectDescription"></span></h6>
+                <h6>Kriteria:</h6>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>No.</th>
+                            <th>Nama Kriteria</th>
+                           
+                        </tr>
+                    </thead>
+                    <tbody id="modalProjectCriteria"></tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+<script>
+ 
+    $(document).ready(function () {
+        // Inisialisasi DataTable
+        $("#proyekTable").DataTable({
+            ajax: {
+                url: "/api/proyek",
+                dataSrc: "",
+            },
+            columns: [
+                { data: "nama_proyek" },
+                { data: "deskripsi" },
+                { data: "periode_mulai" },
+                { data: "periode_selesai" },
+                {
+                    data: null, // Kolom untuk tombol
+                    orderable: false, // Nonaktifkan pengurutan untuk kolom ini
+                    render: function (data, type, row) {
+                        return `<button class="btn btn-primary btn-sm view-btn" data-id="${row.id}">Detail</button>`;
+                    }
+                },
+            ],
+        });
+
+        // Event listener untuk tombol View
+        $("#proyekTable").on("click", ".view-btn", function () {
+            const id = $(this).data("id");
+
+            // Ambil data proyek berdasarkan ID
+            $.get(`/api/proyek/${id}`, function (data) {
+                // Update modal dengan data proyek
+                $("#modalProjectName").text(data.nama_proyek);
+                $("#modalProjectDescription").text(data.deskripsi);
+
+                // Kosongkan daftar kriteria
+                $("#modalProjectCriteria").empty();
+
+                // Tambahkan kriteria ke dalam modal
+                data.kriteria.forEach(function (kriteria,index) {
+                    $("#modalProjectCriteria").append(
+                        `<tr>
+                            <td>${index+1}</td>
+                            <td>${kriteria.nama_kriteria}</td>
+                            
+                            </tr>`
+                    );
+                });
+
+                // Tampilkan modal
+                $("#projectDetailModal").modal('show');
+            }).fail(function () {
+                alert("Gagal memuat detail proyek. Silakan coba lagi.");
+            });
+        });
+    });
+</script>
+
+<!-- ------------------ -->
+{% endblock %}

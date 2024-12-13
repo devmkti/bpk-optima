@@ -49,15 +49,25 @@
         <div data-i18n="Beranda">Beranda</div>
       </a>
     </li>
-    <li class="menu-item {% if request.path == '/addNewProject' %}active{% endif %}">
-      <a href="{{ url_for('main.addNewProject') }}" class="menu-link">
-        <i class="menu-icon tf-icons ti ti-mail"></i>
-        <div data-i18n="Tambah Proyek Baru">Tambah Proyek Baru</div>
-      </a>
-    </li>
+   
     <li class="menu-item {% if request.path == '/listOfProject' %}active{% endif %}">
       <a href="{{ url_for('main.listOfProject') }}" class="menu-link">
         <i class="menu-icon tf-icons ti ti-mail"></i>
+        <div data-i18n="Daftar Proyek">Daftar Proyek</div>
+      </a>
+    </li>
+    <li class="menu-header small text-uppercase">
+      <span class="menu-header-text" data-i18n="Project Owner">Project Owner</span>
+    </li>
+    <li class="menu-item {% if request.path == '/addNewProject' %}active{% endif %}">
+      <a href="{{ url_for('main.addNewProject') }}" class="menu-link">
+        <i class="menu-icon tf-icons ti ti-square-plus"></i>
+        <div data-i18n="Tambah Proyek Baru">Tambah Proyek Baru</div>
+      </a>
+    </li>
+    <li class="menu-item {% if request.path == '/listProjectOwner' %}active{% endif %}">
+      <a href="{{ url_for('main.listProjectOwner') }}" class="menu-link">
+        <i class="menu-icon tf-icons ti ti-list"></i>
         <div data-i18n="Daftar Proyek">Daftar Proyek</div>
       </a>
     </li>
