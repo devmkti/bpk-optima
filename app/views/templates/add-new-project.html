@@ -122,6 +122,9 @@
             var result = await response.json()
             if(response.ok){
                 toastr.success(result.message, 'Sukses!')
+                setTimeout(() => {
+                    window.location.href = '/listProjectOwner'
+                }, 2000);
             }else{
                 toastr.error('Data gagal disimpan!', 'Oops!')
             }
