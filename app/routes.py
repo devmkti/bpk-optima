@@ -43,7 +43,8 @@ def get_project():
     return jsonify(result)
 
 # Route untuk melihat detail proyek
-@main_bp.route('/proyek/<int:id>/view', methods=['POST'])
+@main_bp.route('/proyek/<uuid:id>/view', methods=['GET'])
+# @main_bp.route('/proyek/view', methods=['GET'])
 def view_proyek(id):
     proyek = Proyek.query.get_or_404(id)
     return render_template('view_proyek.html', proyek=proyek)
@@ -51,3 +52,10 @@ def view_proyek(id):
 @main_bp.route('/api/proyek/<uuid:project_id>', methods=['GET'])
 def api_get_project_details(project_id):
     return jsonify(get_project_details(project_id))
+
+# Route untuk melihat detail proyek
+@main_bp.route('/proyek/<uuid:id>/participate', methods=['GET'])
+def participate_proyek(id):
+    proyek = Proyek.query.get_or_404(id)
+    #proyek = db.session.query(Proyek, Kriteria).join(Kriteria, Proyek.id == Kriteria.id_proyek).all()
+    return render_template('participate_proyek.html', proyek=proyek)

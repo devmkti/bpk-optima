@@ -1,0 +1,208 @@
+{% extends 'base.html' %} {% block title %}Add New Project{% endblock %}
+
+<!-- Konten Halaman  -->
+
+<!-- Modifikasi di sini -->
+{% block content %}
+
+<!-- Content wrapper -->
+<div class="content-wrapper">
+  <!-- Content -->
+  <!-- Multi Column with Form Separator -->
+    <div class="card mb-4">
+        <h5 class="card-header">Partisipasi User dalam Proyek</h5>
+        
+        <form class="card-body">
+            <h6>1. Informasi Umum</h6>
+            <div class="row g-3">
+            
+                <div class="col-md-6">
+                    <label class="form-label" for="multicol-username">Nama Proyek</label>
+                    <input type="text" id="multicol-username" class="form-control" value="{{proyek.nama_proyek}}">
+                </div>
+                
+                <div class="col-md-6">
+                    <label class="form-label" for="multicol-email">Deskripsi</label>
+                    <input type="text" id="multicol-username" class="form-control" value="{{proyek.deskripsi}}" />
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label" for="multicol-password">Periode</label>
+                    <input type="text" id="multicol-username" class="form-control" value="{{proyek.periode_mulai}} s/d {{proyek.periode_selesai}}" />
+                </div>
+                
+                <div class="col-md-6">
+                    <label class="form-label" for="multicol-confirm-password">Jumlah Responden</label>
+                    <div class="input-group input-group-merge">
+                        <input type="text" id="multicol-username" class="form-control" value="{{proyek.jumlah_responden}}" />
+                    </div>
+                </div>
+            </div>
+        
+            <hr class="my-4 mx-n4" />
+            <h6>2. Kriteria yang Dinilai</h6>
+            <!-- <div class="row g-3"> -->
+            <!-- Looping Kriteria-->
+            <div class="md-6">
+            <label class="form-label" for="multicol-first-name">Kriteria n</label>
+            <input type="text" id="multicol-first-name" class="form-control" value="" />
+            </div>
+        
+        
+            <hr class="my-4 mx-n4" />
+            <h6>3. Penilaian Kriteria oleh User</h6>
+            <div class="row my-4">
+                <div class="accordion" id="collapsibleSection">
+                    <div class="card accordion-item">
+                        <h2 class="accordion-header" id="headingDeliveryAddress">
+                            <button
+                            type="button"
+                            class="accordion-button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#collapseDeliveryAddress"
+                            aria-expanded="true"
+                            aria-controls="collapseDeliveryAddress">
+                            Best to Others (BO)
+                            </button>
+                        </h2>
+                        <div
+                            id="collapseDeliveryAddress"
+                            class="accordion-collapse collapse show"
+                            data-bs-parent="#collapsibleSection">
+                            <div class="accordion-body">
+                                <div class="row g-3">
+                                    <div class="col-md-10">
+                                        <label class="form-label" for="collapsible-fullname">Kriteria 1</label>
+                                        <input
+                                            type="text"
+                                            id="collapsible-fullname"
+                                            class="form-control"
+                                            placeholder="Kriteria" />
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label" for="collapsible-phone">Nilai</label>
+                                        <input
+                                            type="text"
+                                            id="collapsible-phone"
+                                            class="form-control phone-mask"
+                                            placeholder="Skor (1-9)"
+                                            aria-label="658 799 8941" />
+                                    </div>              
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card accordion-item">
+                        <h2 class="accordion-header" id="headingDeliveryAddress">
+                            <button
+                            type="button"
+                            class="accordion-button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#collapseDeliveryAddress"
+                            aria-expanded="true"
+                            aria-controls="collapseDeliveryAddress">
+                            Others to Worst (OW)
+                            </button>
+                        </h2>
+                        <div
+                            id="collapseDeliveryAddress"
+                            class="accordion-collapse collapse show"
+                            data-bs-parent="#collapsibleSection">
+                            <div class="accordion-body">
+                                <div class="row g-3">
+                                    <div class="col-md-10">
+                                        <label class="form-label" for="collapsible-fullname">Kriteria 1</label>
+                                        <input
+                                            type="text"
+                                            id="collapsible-fullname"
+                                            class="form-control"
+                                            placeholder="Kriteria" />
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label" for="collapsible-phone">Nilai</label>
+                                        <input
+                                            type="text"
+                                            id="collapsible-phone"
+                                            class="form-control phone-mask"
+                                            placeholder="Skor (1-9)"
+                                            aria-label="658 799 8941" />
+                                    </div>              
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pt-4">
+                        
+                    <button type="submit" class="btn btn-primary me-sm-3 me-1">Submit</button>
+                    <button type="reset" class="btn btn-label-secondary">Cancel</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<!-- JavaScript untuk menambahkan textbox sesuai jumlah kriteria -->
+<script>
+  // Tunggu sampai DOM selesai dimuat
+  document.addEventListener("DOMContentLoaded", function () {
+    document.getElementById("criteria-card").style.visibility = "hidden";
+    var numCriteriaInput = document.getElementById("num-criteria");
+    var criteriaContainer = document.getElementById("criteria-container");
+    var criteriaCard = document.getElementById("criteria-card"); // Card untuk kriteria
+
+    // Listener untuk input jumlah kriteria
+    numCriteriaInput.addEventListener("input", function () {
+      var numCriteria = parseInt(numCriteriaInput.value) || 0; // Menghindari NaN jika input kosong
+      criteriaContainer.innerHTML = ""; // Bersihkan input sebelumnya
+
+      // Menambah textbox sesuai jumlah kriteria
+      for (var i = 0; i < numCriteria; i++) {
+        var inputGroup = document.createElement("div");
+        inputGroup.classList.add("mb-3"); // Memberikan jarak antar input
+
+        var label = document.createElement("label");
+        label.classList.add("form-label");
+        label.textContent = "Kriteria " + (i + 1);
+        inputGroup.appendChild(label);
+
+        var input = document.createElement("input");
+        input.type = "text";
+        input.classList.add("form-control");
+        input.placeholder = "Masukkan Kriteria " + (i + 1);
+        inputGroup.appendChild(input);
+
+        criteriaContainer.appendChild(inputGroup);
+      }
+
+      // Menampilkan card kriteria hanya jika ada kriteria yang dimasukkan
+      if (numCriteria > 0) {
+        document.getElementById("criteria-card").style.visibility = "visible";
+        criteriaCard.style.display = "block"; // Menampilkan card kriteria
+      } else {
+        criteriaCard.style.display = "none"; // Menyembunyikan card jika tidak ada kriteria
+      }
+    });
+  });
+
+  document.getElementById("project-form").addEventListener("submit", function (event) {
+    event.preventDefault();
+    var formData = new FormData(this);
+
+    var criteriaContainer = document.getElementById("criteria-container");
+    var criteria = criteriaContainer.children;
+
+    for (var i = 0; i < criteria.length; i++) {
+      var input = criteria[i].children[1];
+      formData.append("kriteria[]", input.value);
+    }
+
+    fetch("/proyek", {
+      method: "POST",
+      body: formData,
+    })
+      .then((response) => response.json())
+      .then((data) => console.log(data))
+      .catch((error) => console.error(error));
+  });
+</script>
+
+{% endblock %}

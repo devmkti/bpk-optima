@@ -7,7 +7,23 @@ from app.models.proyek import Proyek
 from app.models.kriteria import Kriteria
 from sqlalchemy.dialects.postgresql import UUID
 
+
 def get_proyek():
+    proyek_data = db.session.query(Proyek, Kriteria).join(Kriteria, Proyek.id == Kriteria.id_proyek).all()
+    # Format hasil
+    result = [
+        {
+            "proyek_id": proyek.id,
+            "nama_proyek": proyek.nama_proyek,
+            "deskripsi": proyek.deskripsi,
+            "kriteria_id": kriteria.id,
+            "nama_kriteria": kriteria.nama_kriteria
+        }
+        for kriteria in proyek_data
+    ]
+    return result
+
+def get_proyek_tok():
     proyek_data = Proyek.query.all()
     result = [
         {

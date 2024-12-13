@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Detail Proyek{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Detail Proyek</h2>
+    <table class="table">
+        <tr>
+            <th>Nama Proyek</th>
+            <td>{{ proyek.nama_proyek }}</td>
+        </tr>
+        <tr>
+            <th>Deskripsi</th>
+            <td>{{ proyek.deskripsi }}</td>
+        </tr>
+        <tr>
+            <th>Periode Mulai</th>
+            <td>{{ proyek.periode_mulai }}</td>
+        </tr>
+        <tr>
+            <th>Periode Selesai</th>
+            <td>{{ proyek.periode_selesai }}</td>
+        </tr>
+        <tr>
+            <th>Jumlah Kriteria</th>
+            <td>{{ proyek.jumlah_kriteria }}</td>
+        </tr>
+        <tr>
+            <th>Jumlah Responden</th>
+            <td>{{ proyek.jumlah_responden }}</td>
+        </tr>
+    </table>
+    <a href="/" class="btn btn-secondary">Kembali</a>
+</div>
+{% endblock %}
