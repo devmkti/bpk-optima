@@ -102,7 +102,7 @@
         });
     });
 
-    document.getElementById('project-form').addEventListener('submit', function(event) {
+    document.getElementById('project-form').addEventListener('submit', async function(event) {
         event.preventDefault();
         var formData = new FormData(this);
 
@@ -114,14 +114,20 @@
             formData.append('kriteria[]', input.value);
         }
 
-        fetch('/proyek', {
-            method: 'POST',
-            body: formData
-        }).then(response => function (){
-            response.json()
-            // Display a success toast, with a title
-            toastr.success('Data berhasil disimpan!', 'Sukses!')
-        }).then(data => console.log(data)).catch(error => console.error(error));
+        try{
+            var response = await fetch('/proyek', {
+                method: 'POST',
+                body: formData
+            })
+            var result = await response.json()
+            if(response.ok){
+                toastr.success(result.message, 'Sukses!')
+            }else{
+                toastr.error('Data gagal disimpan!', 'Oops!')
+            }
+        } catch (error) {
+            toastr.warning(error, 'Sukses!')
+        }
     });
     
 </script>
