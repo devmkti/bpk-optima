@@ -7,40 +7,40 @@
 <!-- Modifikasi di sini -->
 {% block content %}
 
-<h4> Tambah Proyek Baru</h4> 
 <div class="col-lg-12">
     <div class="col-xl">
         <div class="card mb-4">
             <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="mb-0"></h5>
+                <!-- <h5 class="mb-0"></h5> -->
+                <h4 class="mb-0 text-primary"> Tambah Proyek Baru</h4> 
                 <small class="text-muted float-end"></small>
             </div>
             <div class="card-body">
                 <form id="project-form">
                     <div class="mb-3">
-                        <label class="form-label" for="basic-default-fullname">Nama Proyek</label>
+                        <label class="form-label text-primary" for="basic-default-fullname">Nama Proyek</label>
                         <input type="text" class="form-control" id="basic-default-fullname" name="nama_proyek"
                             placeholder="Penilaian Kinerja" />
                     </div>
                     <div class="mb-3">
-                        <label class="form-label" for="basic-default-message">Deskripsi Proyek</label>
+                        <label class="form-label text-primary" for="basic-default-message">Deskripsi Proyek</label>
                         <textarea id="basic-default-message" class="form-control" name="deskripsi"
                             placeholder="Deskripsi Proyek"></textarea>
                     </div>
                     
                     <div class="mb-3">
-                        <label for="flatpickr-range" class="form-label">Periode Partisipan</label>
+                        <label for="flatpickr-range" class="form-label text-primary">Periode Partisipan</label>
                         <input type="text" class="form-control" name="periode_mulai" placeholder="YYYY-MM-DD to YYYY-MM-DD"
                             id="flatpickr-range" />
                     </div>
                     
                     <div class="mb-3">
-                        <label class="form-label" for="basic-default-respondents">Jumlah Responden</label>
+                        <label class="form-label text-primary" for="basic-default-respondents">Jumlah Responden</label>
                         <input type="number" class="form-control" id="basic-default-respondents" name="jumlah_responden" placeholder="Masukan jumlah responden yang akan berpartisipasi" />
                     </div>
                     
                     <div class="mb-3">
-                        <label class="form-label" for="num-criteria">Jumlah Kriteria</label>
+                        <label class="form-label text-primary" for="num-criteria">Jumlah Kriteria</label>
                         <input type="number" class="form-control" id="num-criteria" name="jumlah_kriteria" placeholder="Masukan jumlah kriteria yang akan dinilai" />
                     </div>
                     
