@@ -57,5 +57,9 @@ def api_get_project_details(project_id):
 @main_bp.route('/proyek/<uuid:id>/participate', methods=['GET'])
 def participate_proyek(id):
     proyek = Proyek.query.get_or_404(id)
-    #proyek = db.session.query(Proyek, Kriteria).join(Kriteria, Proyek.id == Kriteria.id_proyek).all()
-    return render_template('participate_proyek.html', proyek=proyek)
+    kriterias = db.session.query(Proyek.id, Kriteria.nama_kriteria).join(Kriteria, Proyek.id == Kriteria.id_proyek, isouter=True).where(Proyek.id == id).all()
+    temp = []
+    for k in kriterias:
+      temp.append(k[1])
+
+    return render_template('participate_proyek.html', proyek=proyek, kriterias=temp)

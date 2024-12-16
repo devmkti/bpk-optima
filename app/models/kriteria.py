@@ -12,5 +12,13 @@ class Kriteria(db.Model):
 
     proyek = db.relationship('Proyek', backref=db.backref('details', lazy=True))
 
-    def __repr__(self):
-        return f'<Proyek {self.nama_kriteria}>'
+    # def __repr__(self):
+    #     # return f'<Proyek {self.nama_kriteria}>'
+    #     return f'{self.nama_kriteria}'
+    # def toJSON(self):
+    #     return {
+    #         "id":self.id,
+    #         "id_proyek":self.id_proyek,
+    #         "nama_kriteria":self.nama_kriteria,
+    #         "deskripsi":self.deskripsi
+    #     }

@@ -1,4 +1,4 @@
-{% extends 'base.html' %} {% block title %}Add New Project{% endblock %}
+{% extends 'layout/base.html' %} {% block title %}Add New Project{% endblock %}
 
 <!-- Konten Halaman  -->
 
@@ -44,8 +44,20 @@
             <!-- <div class="row g-3"> -->
             <!-- Looping Kriteria-->
             <div class="md-6">
-            <label class="form-label" for="multicol-first-name">Kriteria n</label>
-            <input type="text" id="multicol-first-name" class="form-control" value="" />
+            <table class="table table-bordered">
+                <thead>
+                    <th style="width: 1%;"><b>No</b></th>
+                    <th><b>Kriteria</b></th>
+                </thead>
+                <tbody>
+                    {% for kriteria in kriterias %}
+                    <tr>
+                        <td>{{loop.index}}</td>
+                        <td>{{ kriteria|e }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
             </div>
         
         
@@ -71,23 +83,25 @@
                             data-bs-parent="#collapsibleSection">
                             <div class="accordion-body">
                                 <div class="row g-3">
+                                    {% for kriteria in kriterias %}
                                     <div class="col-md-10">
-                                        <label class="form-label" for="collapsible-fullname">Kriteria 1</label>
+                                        <label class="form-label" for="collapsible-fullname">Kriteria {{loop.index}}</label>
                                         <input
                                             type="text"
                                             id="collapsible-fullname"
                                             class="form-control"
-                                            placeholder="Kriteria" />
+                                            placeholder="Kriteria" value="{{kriteria | e}}" disabled />
                                     </div>
                                     <div class="col-md-2">
                                         <label class="form-label" for="collapsible-phone">Nilai</label>
                                         <input
-                                            type="text"
+                                            type="number"
                                             id="collapsible-phone"
                                             class="form-control phone-mask"
                                             placeholder="Skor (1-9)"
                                             aria-label="658 799 8941" />
-                                    </div>              
+                                    </div>
+                                    {% endfor %}
                                 </div>
                             </div>
                         </div>
@@ -110,13 +124,14 @@
                             data-bs-parent="#collapsibleSection">
                             <div class="accordion-body">
                                 <div class="row g-3">
+                                    {% for kriteria in kriterias %}
                                     <div class="col-md-10">
-                                        <label class="form-label" for="collapsible-fullname">Kriteria 1</label>
+                                        <label class="form-label" for="collapsible-fullname">Kriteria {{loop.index}}</label>
                                         <input
                                             type="text"
                                             id="collapsible-fullname"
                                             class="form-control"
-                                            placeholder="Kriteria" />
+                                            placeholder="Kriteria" value="{{kriteria | e}}" disabled />
                                     </div>
                                     <div class="col-md-2">
                                         <label class="form-label" for="collapsible-phone">Nilai</label>
@@ -126,7 +141,8 @@
                                             class="form-control phone-mask"
                                             placeholder="Skor (1-9)"
                                             aria-label="658 799 8941" />
-                                    </div>              
+                                    </div>
+                                    {% endfor %}       
                                 </div>
                             </div>
                         </div>
