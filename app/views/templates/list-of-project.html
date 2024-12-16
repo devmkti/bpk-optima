@@ -1,5 +1,5 @@
 <!-- Memanggil base template -->
-{% extends 'base.html' %}
+{% extends 'layout/base.html' %}
 
 <!-- Judul Halaman -->
 {% block title %}List Of Project{% endblock %}
@@ -67,12 +67,14 @@
         const id = $(this).data("id");
         // Contoh: Aksi partisipasi, bisa AJAX atau navigasi
         if (confirm("Are you sure to participate in this project?")) {
-            $.post(`/proyek/${id}/participate`, function (response) {
-                alert(response.message || "Participation successful!");
-                table.ajax.reload(); // Reload data table
-            }).fail(function () {
-                alert("Failed to participate. Please try again.");
-            });
+          window.location.href = `/proyek/${id}/participate`;
+            // $.get(`/proyek/${id}/participate`, function (response) {
+            //     alert(response.message || "Participation successful!");
+            //     // table.ajax.reload(); // Reload data table
+            //     window.location.href = `/proyek/${id}/participate`;
+            // }).fail(function () {
+            //     alert("Failed to participate. Please try again.");
+            // });
         }
     });
   });
