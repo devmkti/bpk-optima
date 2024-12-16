@@ -6,24 +6,25 @@ from datetime import datetime
 from app.models.proyek import Proyek
 from app.models.kriteria import Kriteria
 from sqlalchemy.dialects.postgresql import UUID
+from app.global_functions import *
 
 
-def get_proyek():
+def get_proyek_kriteria():
     proyek_data = db.session.query(Proyek, Kriteria).join(Kriteria, Proyek.id == Kriteria.id_proyek).all()
     # Format hasil
     result = [
         {
-            "proyek_id": proyek.id,
-            "nama_proyek": proyek.nama_proyek,
-            "deskripsi": proyek.deskripsi,
-            "kriteria_id": kriteria.id,
-            "nama_kriteria": kriteria.nama_kriteria
+            "proyek_id": Proyek.id,
+            "nama_proyek": Proyek.nama_proyek,
+            "deskripsi": Proyek.deskripsi,
+            "kriteria_id": Kriteria.id,
+            "nama_kriteria": Kriteria.nama_kriteria
         }
         for kriteria in proyek_data
     ]
     return result
 
-def get_proyek_tok():
+def get_proyek():
     proyek_data = Proyek.query.all()
     result = [
         {
@@ -32,8 +33,8 @@ def get_proyek_tok():
             'deskripsi': p.deskripsi,
             'jumlah_kriteria': p.jumlah_kriteria,
             'jumlah_responden': p.jumlah_responden,
-            'periode_mulai': p.periode_mulai.strftime('%Y-%m-%d'),
-            'periode_selesai': p.periode_selesai.strftime('%Y-%m-%d')
+            'periode_mulai': get_full_date(p.periode_mulai.strftime('%Y-%m-%d')) if p.periode_mulai else "-",
+            'periode_selesai': get_full_date(p.periode_selesai.strftime('%Y-%m-%d')) if p.periode_selesai else "-"
         }
         for p in proyek_data
     ]
