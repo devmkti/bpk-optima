@@ -155,7 +155,15 @@
                     url: `/api/kriteria_delete/${kriteriaId}`,
                     type: "DELETE",
                     success: function (response) {
-                        alert(response.message);
+                        Swal.fire({
+                        title: 'Sukses',
+                        text: 'Data Berhasil Dihapus',
+                        icon: 'success',
+                        customClass: {
+                            confirmButton: 'btn btn-primary waves-effect waves-light'
+                        },
+                        buttonsStyling: false
+                    });
                         // Refresh modal atau hapus baris dari tabel
                         $(`#modalProjectCriteria button[data-id="${kriteriaId}"]`).closest(
                             "tr").remove();
@@ -225,12 +233,30 @@
                 contentType: 'application/json',
                 data: JSON.stringify(updatedData),
                 success: function () {
-                    alert("Proyek berhasil diperbarui.");
+
+                    Swal.fire({
+                        title: 'Sukses!',
+                        text: 'Data Berhasil Disimpan',
+                        icon: 'success',
+                        customClass: {
+                            confirmButton: 'btn btn-primary waves-effect waves-light'
+                        },
+                        buttonsStyling: false
+                    });
+
                     $("#editProjectModal").modal('hide');
                     $("#proyekTable").DataTable().ajax.reload();
                 },
                 error: function () {
-                    alert("Gagal memperbarui proyek. Silakan coba lagi.");
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'Gagal Update Data',
+                        icon: 'error',
+                        customClass: {
+                            confirmButton: 'btn btn-primary waves-effect waves-light'
+                        },
+                        buttonsStyling: false
+                    });
                 }
             });
         });
