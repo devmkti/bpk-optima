@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'layout/base.html' %}
 
 {% block title %}Add New Project{% endblock %}
 
@@ -121,15 +121,39 @@
             })
             var result = await response.json()
             if(response.ok){
-                toastr.success(result.message, 'Sukses!')
+                Swal.fire({
+                    title: 'Sukses!',
+                    text: result.message,
+                    icon: 'success',
+                    customClass: {
+                        confirmButton: 'btn btn-primary waves-effect waves-light'
+                    },
+                    buttonsStyling: false
+                });
                 setTimeout(() => {
                     window.location.href = '/listProjectOwner'
                 }, 2000);
             }else{
-                toastr.error('Data gagal disimpan!', 'Oops!')
+                Swal.fire({
+                    title: 'Oops!',
+                    text: 'Data gagal disimpan.',
+                    icon: 'error',
+                    customClass: {
+                        confirmButton: 'btn btn-primary waves-effect waves-light'
+                    },
+                    buttonsStyling: false
+                });
             }
         } catch (error) {
-            toastr.warning(error, 'Sukses!')
+            Swal.fire({
+                title: 'Perhatian!',
+                text: 'Terjadi kesalahan. Silahkan hubungi administrator!',
+                icon: 'warning',
+                customClass: {
+                    confirmButton: 'btn btn-primary waves-effect waves-light'
+                },
+                buttonsStyling: false
+            });
         }
     });
     

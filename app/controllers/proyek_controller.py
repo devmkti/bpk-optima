@@ -8,7 +8,6 @@ from app.models.kriteria import Kriteria
 from sqlalchemy.dialects.postgresql import UUID
 from app.global_functions import *
 
-
 def get_proyek_kriteria():
     proyek_data = db.session.query(Proyek, Kriteria).join(Kriteria, Proyek.id == Kriteria.id_proyek).all()
     # Format hasil

@@ -1,5 +1,5 @@
 <!-- Memanggil base template -->
-{% extends 'base.html' %}
+{% extends 'layout/base.html' %}
 
 <!-- Judul Halaman -->
 {% block title %}List Of Project{% endblock %}
@@ -169,7 +169,15 @@
                             "tr").remove();
                     },
                     error: function () {
-                        alert("Gagal menghapus kriteria. Silakan coba lagi.");
+                        Swal.fire({
+                            title: 'Oops!',
+                            text: 'Gagal menghapus kriteria. Silakan coba lagi.',
+                            icon: 'error',
+                            customClass: {
+                                confirmButton: 'btn btn-primary waves-effect waves-light'
+                            },
+                            buttonsStyling: false
+                        });
                     }
                 });
             }
@@ -201,7 +209,15 @@
 
                 $("#editProjectModal").modal('show');
             }).fail(function () {
-                alert("Gagal memuat data untuk diedit. Silakan coba lagi.");
+                Swal.fire({
+                    title: 'Oops!',
+                    text: 'Gagal memuat data untuk diedit. Silakan coba lagi.',
+                    icon: 'error',
+                    customClass: {
+                        confirmButton: 'btn btn-primary waves-effect waves-light'
+                    },
+                    buttonsStyling: false
+                });
             });
         });
 

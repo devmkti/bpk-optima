@@ -73,11 +73,11 @@
     <main>
         <div class="layout-wrapper layout-content-navbar">
             <div class="layout-container">
-                {% include 'menu.html' %}
+                {% include 'layout/menu.html' %}
                 <!-- Layout container -->
                 <div class="layout-page">
                     <!-- Navbar -->
-                    {% include 'navbar.html' %}
+                    {% include 'layout/navbar.html' %}
                     <!-- / Navbar -->
                     <!-- Content wrapper -->
                     <div class="content-wrapper">
@@ -89,7 +89,7 @@
                             </div>
                         </div>
                         <!-- / Content -->
-                        {% include 'footer.html' %}
+                        {% include 'layout/footer.html' %}
                         <div class="content-backdrop fade"></div>
                     </div>
                     <!-- Content wrapper -->
@@ -136,7 +136,6 @@
     <script src="{{ url_for('static', filename='js/form-layouts.js') }}"></script>
     <!-- Page JS -->
     <script src="{{ url_for('static', filename='js/ui-toasts.js') }}"></script>
-
     <script src="{{ url_for('static', filename='vendor/libs/sweetalert2/sweetalert2.js') }}"></script>
     
 </body>
