@@ -33,7 +33,7 @@
         <div class="modal-content">
             <div class="modal-header text-center">
                 <h4 class="modal-title" id="projectDetailModalLabel">Detail Proyek</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <h6>Nama Proyek: <span id="modalProjectName"></span></h6>
@@ -44,7 +44,7 @@
                         <tr>
                             <th>No.</th>
                             <th>Nama Kriteria</th>
-                           
+                            <th>Aksi</th>
                         </tr>
                     </thead>
                     <tbody id="modalProjectCriteria"></tbody>
@@ -56,10 +56,40 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="editProjectModal" tabindex="-1" aria-labelledby="editProjectModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editProjectModalLabel">Edit Proyek</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editProjectForm">
+                    <input type="hidden" id="idprojectname" name="id">
+                    <div class="mb-3">
+                        <label for="editProjectName" class="form-label">Nama Proyek</label>
+                        <input type="text" class="form-control" id="editProjectName" name="nama_proyek" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editProjectDescription" class="form-label">Deskripsi</label>
+                        <textarea class="form-control" id="editProjectDescription" name="deskripsi" required></textarea>
+                    </div>
+                    <h6>Kriteria:</h6>
+                    <div id="editProjectCriteriaContainer"></div>
+                    <button type="button" class="btn btn-primary" id="addCriteriaBtn">Tambah Kriteria</button>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                <button type="button" class="btn btn-primary" id="saveEditProjectBtn">Simpan Perubahan</button>
+            </div>
+        </div>
+    </div>
+</div>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
 <script>
- 
     $(document).ready(function () {
         // Inisialisasi DataTable
         $("#proyekTable").DataTable({
@@ -67,16 +97,24 @@
                 url: "/api/proyek",
                 dataSrc: "",
             },
-            columns: [
-                { data: "nama_proyek" },
-                { data: "deskripsi" },
-                { data: "periode_mulai" },
-                { data: "periode_selesai" },
+            columns: [{
+                    data: "nama_proyek"
+                },
+                {
+                    data: "deskripsi"
+                },
+                {
+                    data: "periode_mulai"
+                },
+                {
+                    data: "periode_selesai"
+                },
                 {
                     data: null, // Kolom untuk tombol
                     orderable: false, // Nonaktifkan pengurutan untuk kolom ini
                     render: function (data, type, row) {
-                        return `<button class="btn btn-primary btn-sm view-btn" data-id="${row.id}">Detail</button>`;
+                        return `<button class="btn btn-primary btn-sm view-btn" data-id="${row.id}">Detail</button>
+                                <button class="btn btn-warning btn-sm edit-btn" data-id="${row.id}">Edit</button>`;
                     }
                 },
             ],
@@ -88,29 +126,130 @@
 
             // Ambil data proyek berdasarkan ID
             $.get(`/api/proyek/${id}`, function (data) {
-                // Update modal dengan data proyek
                 $("#modalProjectName").text(data.nama_proyek);
                 $("#modalProjectDescription").text(data.deskripsi);
-
-                // Kosongkan daftar kriteria
                 $("#modalProjectCriteria").empty();
 
-                // Tambahkan kriteria ke dalam modal
-                data.kriteria.forEach(function (kriteria,index) {
+                data.kriteria.forEach(function (kriteria, index) {
                     $("#modalProjectCriteria").append(
                         `<tr>
-                            <td>${index+1}</td>
+                            <td>${index + 1}</td>
                             <td>${kriteria.nama_kriteria}</td>
-                            
-                            </tr>`
+                            <td><button class="btn btn-danger btn-sm delete-btn" data-id="${kriteria.id}">Hapus</button></td>
+                        </tr>`
                     );
                 });
 
-                // Tampilkan modal
+                $("#editProjectBtn").data("id", id);
                 $("#projectDetailModal").modal('show');
             }).fail(function () {
                 alert("Gagal memuat detail proyek. Silakan coba lagi.");
             });
+        });
+
+        $("#modalProjectCriteria").on("click", ".delete-btn", function () {
+            const kriteriaId = $(this).data("id");
+
+            if (confirm("Apakah Anda yakin ingin menghapus kriteria ini?")) {
+                $.ajax({
+                    url: `/api/kriteria_delete/${kriteriaId}`,
+                    type: "DELETE",
+                    success: function (response) {
+                        alert(response.message);
+                        // Refresh modal atau hapus baris dari tabel
+                        $(`#modalProjectCriteria button[data-id="${kriteriaId}"]`).closest(
+                            "tr").remove();
+                    },
+                    error: function () {
+                        alert("Gagal menghapus kriteria. Silakan coba lagi.");
+                    }
+                });
+            }
+        });
+
+        // Event listener untuk tombol Edit
+        $("#proyekTable").on("click", ".edit-btn", function () {
+            const id = $(this).data("id");
+            // console.log(id);
+
+            // Ambil data proyek untuk diedit
+            $.get(`/api/proyek/${id}`, function (data) {
+                $("#editProjectName").val(data.nama_proyek);
+                $("#editProjectDescription").val(data.deskripsi);
+                $("#idprojectname").val(id);
+                $("#editProjectCriteriaContainer").empty();
+
+                data.kriteria.forEach(function (kriteria, index) {
+                    $("#editProjectCriteriaContainer").append(
+                        `<div class="mb-2 criteria-item">
+                            <label>Kriteria ${index + 1}</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" value="${kriteria.nama_kriteria}" required>
+                                
+                            </div>
+                        </div>`
+                    );
+                });
+
+                $("#editProjectModal").modal('show');
+            }).fail(function () {
+                alert("Gagal memuat data untuk diedit. Silakan coba lagi.");
+            });
+        });
+
+        // Event listener untuk tombol Simpan Perubahan
+        $("#saveEditProjectBtn").on("click", function () {
+            const id = $("#idprojectname").val();
+            if (!id) {
+                alert("ID Proyek tidak ditemukan!");
+                return;
+            }
+
+            const updatedData = {
+                nama_proyek: $("#editProjectName").val(),
+                deskripsi: $("#editProjectDescription").val(),
+                details: []
+            };
+
+            // Ambil semua input kriteria dari container
+            $("#editProjectCriteriaContainer input").each(function () {
+                updatedData.details.push({
+                    nama_kriteria: $(this).val()
+                });
+            });
+
+            // Kirim data ke Flask API menggunakan AJAX
+            $.ajax({
+                url: `/api/edit_proyek/${id}`,
+                type: 'PUT',
+                contentType: 'application/json',
+                data: JSON.stringify(updatedData),
+                success: function () {
+                    alert("Proyek berhasil diperbarui.");
+                    $("#editProjectModal").modal('hide');
+                    $("#proyekTable").DataTable().ajax.reload();
+                },
+                error: function () {
+                    alert("Gagal memperbarui proyek. Silakan coba lagi.");
+                }
+            });
+        });
+
+        // Event listener untuk tombol Tambah Kriteria
+        $("#addCriteriaBtn").on("click", function () {
+            $("#editProjectCriteriaContainer").append(
+                `<div class="mb-2 criteria-item">
+                    <label>Kriteria Baru</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Nama Kriteria" required>
+                        <button type="button" class="btn btn-danger btn-remove-criteria">Hapus</button>
+                    </div>
+                </div>`
+            );
+        });
+        $("#editProjectCriteriaContainer").on("click", ".btn-remove-criteria", function () {
+            // Hapus elemen parent yang berisi input group
+            $(this).closest('.criteria-item').remove();
         });
     });
 </script>

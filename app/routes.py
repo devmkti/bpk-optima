@@ -63,3 +63,47 @@ def participate_proyek(id):
       temp.append(k[1])
 
     return render_template('participate_proyek.html', proyek=proyek, kriterias=temp)
+
+@main_bp.route('/api/edit_proyek/<uuid:id>', methods=['PUT'])
+def edit_proyek(id):
+    data = request.json  # Ambil data JSON dari request body
+
+    # Validasi data input
+    if not data or not data.get('nama_proyek') or not data.get('details'):
+        return jsonify({"message": "Data tidak valid!"}), 400
+
+    proyek = Proyek.query.get(id)  # Ambil proyek berdasarkan ID
+    if proyek:
+        proyek.nama_proyek = data['nama_proyek']
+        proyek.deskripsi = data['deskripsi']
+
+        # Update atau tambahkan kriteria baru
+        for detail in data['details']:
+            existing_kriteria = next(
+                (d for d in proyek.details if d.nama_kriteria == detail['nama_kriteria']), None)
+            if not existing_kriteria:
+                new_kriteria = Kriteria(
+                    nama_kriteria=detail['nama_kriteria'],
+                    proyek=proyek
+                )
+                db.session.add(new_kriteria)
+
+        db.session.commit()
+        return jsonify({"message": "Proyek berhasil diperbarui."}), 200
+
+    return jsonify({"message": "Proyek tidak ditemukan."}), 404
+
+@main_bp.route('/api/kriteria_delete/<uuid:kriteria_id>', methods=['DELETE'])
+def delete_kriteria(kriteria_id):
+    try:
+        kriteria = Kriteria.query.get(kriteria_id)
+        if not kriteria:
+            return {"error": "Kriteria not found"}, 404
+        
+        # Hapus data dari database
+        db.session.delete(kriteria)
+        db.session.commit()
+        
+        return {"message": "Kriteria berhasil dihapus"}, 200
+    except Exception as e:
+        return {"error": str(e)}, 500

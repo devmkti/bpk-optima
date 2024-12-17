@@ -88,8 +88,8 @@ def get_project_details(project_id):
             return {"error": "Project not found"}, 404
         
         kriteria_list = Kriteria.query.filter_by(id_proyek=proyek.id).all()
-        kriteria_data = [{"nama_kriteria": k.nama_kriteria} for k in kriteria_list]
-
+        kriteria_data = [{"id": k.id, "nama_kriteria": k.nama_kriteria} for k in kriteria_list]
+       
         return {
             "nama_proyek": proyek.nama_proyek,
             "deskripsi": proyek.deskripsi,
@@ -97,3 +97,22 @@ def get_project_details(project_id):
         }
     except Exception as e:
         return {"error": str(e)}, 500
+    
+def update_project(id, data):
+    proyek = Proyek.query.get(id)
+    if proyek:
+        proyek.nama_proyek = data['nama_proyek']
+        proyek.deskripsi = data['deskripsi']
+        proyek.details.clear()  # Bersihkan kriteria yang ada sebelumnya
+
+        for kriteria in data['kriteria']:
+            if 'nama_kriteria' in kriteria:  # Validasi input kriteria
+                new_kriteria = Kriteria(
+                    nama_kriteria=kriteria['nama_kriteria'],
+                    proyek=proyek
+                )
+                db.session.add(new_kriteria)
+        db.session.commit()
+        return True
+    return False
+    
