@@ -45,14 +45,14 @@
     </li>
     <li class="menu-item {% if request.path == '/home' or request.path == '/' %}active{% endif %}">
       <a href="{{ url_for('main.home') }}" class="menu-link">
-        <i class="menu-icon tf-icons ti ti-messages"></i>
+        <i class="menu-icon tf-icons ti ti-smart-home"></i>
         <div data-i18n="Beranda">Beranda</div>
       </a>
     </li>
    
     <li class="menu-item {% if request.path == '/listOfProject' %}active{% endif %}">
       <a href="{{ url_for('main.listOfProject') }}" class="menu-link">
-        <i class="menu-icon tf-icons ti ti-mail"></i>
+        <i class="menu-icon tf-icons ti ti-list"></i>
         <div data-i18n="Daftar Proyek">Daftar Proyek</div>
       </a>
     </li>
