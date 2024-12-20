@@ -16,6 +16,7 @@
                     <tr>
                         <th>Nama Proyek</th>
                         <th>Deskripsi</th>
+                        <th>Jumlah Responden</th>
                         <th>Periode Mulai</th>
                         <th>Periode Selesai</th>
                         <th>Aksi</th>
@@ -44,7 +45,7 @@
                         <tr>
                             <th>No.</th>
                             <th>Nama Kriteria</th>
-                            <th>Aksi</th>
+                            <th colspan="2" class="text-center">Aksi</th>
                         </tr>
                     </thead>
                     <tbody id="modalProjectCriteria"></tbody>
@@ -72,8 +73,18 @@
                         <input type="text" class="form-control" id="editProjectName" name="nama_proyek" required>
                     </div>
                     <div class="mb-3">
+                        <label class="editProjectJumlahResponden" class="form-label">Jumlah Responden</label>
+                        <input type="number" class="form-control" id="editProjectJumlahResponden"
+                            name="jumlah_responden" required />
+                    </div>
+                    <div class="mb-3">
                         <label for="editProjectDescription" class="form-label">Deskripsi</label>
                         <textarea class="form-control" id="editProjectDescription" name="deskripsi" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editProjectPeriode" class="form-label">Periode Partisipan</label>
+                        <input type="text" class="form-control" name="editperiode"
+                            placeholder="YYYY-MM-DD to YYYY-MM-DD" id="flatpickr-range" />
                     </div>
                     <h6>Kriteria:</h6>
                     <div id="editProjectCriteriaContainer"></div>
@@ -102,6 +113,9 @@
                 },
                 {
                     data: "deskripsi"
+                },
+                {
+                    data: "jumlah_responden"
                 },
                 {
                     data: "periode_mulai"
@@ -136,6 +150,7 @@
                             <td>${index + 1}</td>
                             <td>${kriteria.nama_kriteria}</td>
                             <td><button class="btn btn-danger btn-sm delete-btn" data-id="${kriteria.id}">Hapus</button></td>
+                             <td><button class="btn btn-warning btn-sm editkriteria-btn" data-id="${kriteria.id}">Edit</button></td>
                         </tr>`
                     );
                 });
@@ -144,6 +159,47 @@
                 $("#projectDetailModal").modal('show');
             }).fail(function () {
                 alert("Gagal memuat detail proyek. Silakan coba lagi.");
+            });
+        });
+        // Fungsi untuk mengedit data kriteria langsung di tabel
+        $("#projectDetailModal").on("click", ".editkriteria-btn", function () {
+            const row = $(this).closest("tr"); // Dapatkan baris yang diklik
+            const id = $(this).data("id"); // Ambil ID kriteria
+            const namaKriteria = row.find("td:nth-child(2)").text(); // Ambil nama kriteria
+
+            // Ganti konten kolom menjadi input
+            row.find("td:nth-child(2)").html(
+                `<input type="text" class="form-control edit-input" value="${namaKriteria}">`);
+            $(this).removeClass("editkriteria-btn btn-warning").addClass("savekriteria-btn btn-success")
+                .text("Simpan");
+        });
+
+        // Fungsi untuk menyimpan data yang diedit
+        $("#projectDetailModal").on("click", ".savekriteria-btn", function () {
+            const row = $(this).closest("tr"); // Dapatkan baris yang diklik
+            const id = $(this).data("id"); // Ambil ID kriteria
+            const namaBaru = row.find(".edit-input").val(); // Ambil nilai baru dari input
+
+            // Kirim data ke server menggunakan AJAX
+            $.ajax({
+                url: `/api/kriteria_edit/${id}`, // URL endpoint Flask
+                method: "PUT", // Metode HTTP
+                contentType: "application/json",
+                data: JSON.stringify({
+                    nama_kriteria: namaBaru
+
+
+                }),
+                success: function () {
+                    row.find("td:nth-child(2)").text(namaBaru); // Tampilkan data baru
+                    row.find(".savekriteria-btn").removeClass(
+                        "savekriteria-btn btn-success").addClass(
+                        "editkriteria-btn btn-warning").text("Edit");
+                },
+                error: function () {
+                    alert("Gagal menyimpan perubahan. Silakan coba lagi.");
+
+                },
             });
         });
 
@@ -156,14 +212,14 @@
                     type: "DELETE",
                     success: function (response) {
                         Swal.fire({
-                        title: 'Sukses',
-                        text: 'Data Berhasil Dihapus',
-                        icon: 'success',
-                        customClass: {
-                            confirmButton: 'btn btn-primary waves-effect waves-light'
-                        },
-                        buttonsStyling: false
-                    });
+                            title: 'Sukses',
+                            text: 'Data Berhasil Dihapus',
+                            icon: 'success',
+                            customClass: {
+                                confirmButton: 'btn btn-primary waves-effect waves-light'
+                            },
+                            buttonsStyling: false
+                        });
                         // Refresh modal atau hapus baris dari tabel
                         $(`#modalProjectCriteria button[data-id="${kriteriaId}"]`).closest(
                             "tr").remove();
@@ -186,27 +242,52 @@
         // Event listener untuk tombol Edit
         $("#proyekTable").on("click", ".edit-btn", function () {
             const id = $(this).data("id");
-            // console.log(id);
 
             // Ambil data proyek untuk diedit
             $.get(`/api/proyek/${id}`, function (data) {
                 $("#editProjectName").val(data.nama_proyek);
                 $("#editProjectDescription").val(data.deskripsi);
+                $("#editProjectJumlahResponden").val(data.jumlah_responden);
+                if (data.periode_mulai && data.periode_selesai) {
+                    // Parsing tanggal dari string
+                    const mulai = new Date(data.periode_mulai);
+                    const selesai = new Date(data.periode_selesai);
+
+                    // Format ke YYYY-MM-DD
+                    const formatDate = (date) => {
+                        const year = date.getFullYear();
+                        const month = String(date.getMonth() + 1).padStart(2,
+                            '0'); // Tambahkan nol jika bulan < 10
+                        const day = String(date.getDate()).padStart(2,
+                            '0'); // Tambahkan nol jika hari < 10
+                        return `${year}-${month}-${day}`;
+                    };
+
+                    // Gabungkan hasil format
+                    const periodeFormatted = `${formatDate(mulai)} to ${formatDate(selesai)}`;
+
+                    // Atur nilai input berdasarkan name
+                    $("[name='editperiode']").val(periodeFormatted);
+                } else {
+                    $("[name='editperiode']").val(""); // Kosongkan jika data tidak lengkap
+                }
                 $("#idprojectname").val(id);
                 $("#editProjectCriteriaContainer").empty();
 
+                // Tambahkan data kriteria dengan ID-nya
                 data.kriteria.forEach(function (kriteria, index) {
                     $("#editProjectCriteriaContainer").append(
-                        `<div class="mb-2 criteria-item">
-                            <label>Kriteria ${index + 1}</label>
-                            <div class="input-group">
-                                <input type="text" class="form-control" value="${kriteria.nama_kriteria}" required>
-                                
-                            </div>
-                        </div>`
+                        `<div class="mb-2 criteria-item" data-id="${kriteria.id}">
+                    <label>Kriteria ${index + 1}</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" readonly="true" value="${kriteria.nama_kriteria}" required>
+                        <input type="hidden" value="${kriteria.id}" class="kriteria-id">
+                      
+                    </div>
+                </div>`
                     );
                 });
-
+                console.log(data);
                 $("#editProjectModal").modal('show');
             }).fail(function () {
                 Swal.fire({
@@ -229,16 +310,34 @@
                 return;
             }
 
+            // Ambil nilai periode mulai dan selesai
+            const periodeValue = $("[name='editperiode']")
+        .val(); // Ambil nilai dari input dengan name 'editperiode'
+            const [periodeMulai, periodeSelesai] = periodeValue.split(
+            " to "); // Pisahkan menjadi dua tanggal
+
+            // Periksa apakah periode valid
+            if (!periodeMulai || !periodeSelesai) {
+                alert("Periode tidak valid! Pastikan formatnya adalah 'YYYY-MM-DD to YYYY-MM-DD'.");
+                return;
+            }
+
+            // Buat objek data yang akan dikirim
             const updatedData = {
                 nama_proyek: $("#editProjectName").val(),
                 deskripsi: $("#editProjectDescription").val(),
+                jumlah_responden: $("#editProjectJumlahResponden").val(),
+                periode_mulai: periodeMulai, // Masukkan periode mulai
+                periode_selesai: periodeSelesai, // Masukkan periode selesai
+               
                 details: []
             };
 
             // Ambil semua input kriteria dari container
-            $("#editProjectCriteriaContainer input").each(function () {
+            $("#editProjectCriteriaContainer .criteria-item").each(function () {
                 updatedData.details.push({
-                    nama_kriteria: $(this).val()
+                    id: $(this).data("id"), // Ambil ID kriteria dari data-id
+                    nama_kriteria: $(this).find("input.form-control").val()
                 });
             });
 
@@ -249,7 +348,6 @@
                 contentType: 'application/json',
                 data: JSON.stringify(updatedData),
                 success: function () {
-
                     Swal.fire({
                         title: 'Sukses!',
                         text: 'Data Berhasil Disimpan',

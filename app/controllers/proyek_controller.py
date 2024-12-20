@@ -91,7 +91,11 @@ def get_project_details(project_id):
        
         return {
             "nama_proyek": proyek.nama_proyek,
+            "jumlah_responden": proyek.jumlah_responden ,
             "deskripsi": proyek.deskripsi,
+            "periode_mulai": proyek.periode_mulai,
+            "periode_selesai": proyek.periode_selesai,
+          
             "kriteria": kriteria_data
         }
     except Exception as e:

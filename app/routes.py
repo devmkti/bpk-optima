@@ -64,6 +64,7 @@ def participate_proyek(id):
 
     return render_template('participate_proyek.html', proyek=proyek, kriterias=temp)
 
+
 @main_bp.route('/api/edit_proyek/<uuid:id>', methods=['PUT'])
 def edit_proyek(id):
     data = request.json  # Ambil data JSON dari request body
@@ -76,22 +77,66 @@ def edit_proyek(id):
     if proyek:
         proyek.nama_proyek = data['nama_proyek']
         proyek.deskripsi = data['deskripsi']
+        proyek.jumlah_responden = data['jumlah_responden']
+        proyek.periode_mulai = data['periode_mulai']
+        proyek.periode_selesai = data['periode_selesai']
+        
+        # Buat set untuk menyimpan ID kriteria yang ada
+        existing_kriteria_ids = {kriteria.id for kriteria in proyek.details}
 
         # Update atau tambahkan kriteria baru
         for detail in data['details']:
+            # Cek apakah kriteria sudah ada
             existing_kriteria = next(
-                (d for d in proyek.details if d.nama_kriteria == detail['nama_kriteria']), None)
-            if not existing_kriteria:
+                (k for k in proyek.details if k.nama_kriteria == detail['nama_kriteria']), None)
+            print("Kriteria yang ada:", existing_kriteria_ids)
+            if existing_kriteria:
+                # Jika ada, perbarui kriteria tanpa mengubah ID
+                existing_kriteria.nama_kriteria = detail['nama_kriteria']
+                existing_kriteria_ids.discard(existing_kriteria.id)  # Hapus dari set
+                
+            else:
+                # Jika tidak ada, tambahkan kriteria baru
                 new_kriteria = Kriteria(
                     nama_kriteria=detail['nama_kriteria'],
                     proyek=proyek
                 )
                 db.session.add(new_kriteria)
 
+        # Hapus kriteria yang tidak ada dalam data baru
+        for kriteria_id in existing_kriteria_ids:
+            kriteria_to_delete = Kriteria.query.get(kriteria_id)
+            if kriteria_to_delete:
+                db.session.delete(kriteria_to_delete)
+
         db.session.commit()
         return jsonify({"message": "Proyek berhasil diperbarui."}), 200
 
     return jsonify({"message": "Proyek tidak ditemukan."}), 404
+
+@main_bp.route('/api/kriteria_edit/<uuid:kriteria_id>', methods=['PUT'])
+def update_kriteria(kriteria_id):
+    try:
+        # Ambil data dari request body
+        data = request.get_json()
+        nama_kriteria_baru = data.get('nama_kriteria')
+
+        # Validasi data input
+        if not nama_kriteria_baru:
+            return jsonify({"message": "Nama kriteria tidak boleh kosong"}), 400
+
+        # Cari kriteria berdasarkan ID
+        kriteria = Kriteria.query.get(kriteria_id)
+        if not kriteria:
+            return jsonify({"message": "Kriteria tidak ditemukan"}), 404
+
+        # Update kriteria
+        kriteria.nama_kriteria = nama_kriteria_baru
+        db.session.commit()
+
+        return jsonify({"message": "Data kriteria berhasil diubah"}), 200
+    except Exception as e:
+        return jsonify({"message": f"Terjadi kesalahan: {str(e)}"}), 500
 
 @main_bp.route('/api/kriteria_delete/<uuid:kriteria_id>', methods=['DELETE'])
 def delete_kriteria(kriteria_id):
