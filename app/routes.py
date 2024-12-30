@@ -1,8 +1,10 @@
 from datetime import datetime
+import uuid
 from flask import Blueprint, render_template, request, jsonify
 from app.controllers.proyek_controller import *
 from app.models.proyek import Proyek
 from app.models.kriteria import Kriteria
+from app.models.partisipate import Partisipasi,Partisipasi1
 from app.database import db
 
 from flask import Flask, render_template, request, redirect, url_for, flash
@@ -57,11 +59,12 @@ def api_get_project_details(project_id):
 @main_bp.route('/proyek/<uuid:id>/participate', methods=['GET'])
 def participate_proyek(id):
     proyek = Proyek.query.get_or_404(id)
-    kriterias = db.session.query(Proyek.id, Kriteria.nama_kriteria).join(Kriteria, Proyek.id == Kriteria.id_proyek, isouter=True).where(Proyek.id == id).all()
+    kriterias = db.session.query(Proyek.id, Kriteria.nama_kriteria, Kriteria.id).join(Kriteria, Proyek.id == Kriteria.id_proyek, isouter=True).where(Proyek.id == id).all()
+   
     temp = []
     for k in kriterias:
-      temp.append(k[1])
-
+       temp.append({"nama_kriteria": k[1], "id_kriteria": k[2]})
+    # return temp
     return render_template('participate_proyek.html', proyek=proyek, kriterias=temp)
 
 
@@ -152,3 +155,62 @@ def delete_kriteria(kriteria_id):
         return {"message": "Kriteria berhasil dihapus"}, 200
     except Exception as e:
         return {"error": str(e)}, 500
+
+@main_bp.route('/api/proyek_partisipasi', methods=['POST'])
+def add_partisipasi():
+    try:
+        data = request.get_json()
+        nip = data.get('nip')
+        id_proyek = data.get('idProyek')
+        best_to_others = data.get('best_to_others')
+        others_to_worst = data.get('others_to_worst')
+        
+        if not data:
+            return jsonify({"message": "Tidak ada data yang dikirim."}), 400
+
+        # print("Data diterima:", data)  # Debugging log
+
+        if not data.get('nip'):
+            return jsonify({"message": "NIP tidak ditemukan!"}), 400
+
+        bo_data = data.get('bo', [])
+        wo_data = data.get('wo', [])
+
+        if not bo_data or not wo_data:
+            return jsonify({"message": "Data BO atau WO tidak lengkap!"}), 400
+
+        nip = data['nip']
+        # print("NIP:", nip)  # Debugging log
+
+        # Insert data untuk BO
+        for bo in bo_data:
+            print("Proses BO:", bo)  # Debugging log
+            id_kriteria = uuid.UUID(bo['id_kriteria'])
+            skor = bo['skor']
+            new_partisipasi = Partisipasi(nip=nip, id_kriteria=id_kriteria, opsi='BO', skor=skor)
+            db.session.add(new_partisipasi)
+
+        # Insert data untuk WO
+        for wo in wo_data:
+            print("Proses WO:", wo)  # Debugging log
+            id_kriteria = uuid.UUID(wo['id_kriteria'])
+            skor = wo['skor']
+            new_partisipasi = Partisipasi(nip=nip, id_kriteria=id_kriteria, opsi='WO', skor=skor)
+            db.session.add(new_partisipasi)
+
+        # Commit perubahan ke database
+        new_proyek_dropdown = Partisipasi1(
+            nip=nip,
+            id_proyek=id_proyek,
+            best_to_others=best_to_others,
+            others_to_worst=others_to_worst,
+        )
+        db.session.add(new_proyek_dropdown)
+        db.session.commit()
+        print("Data berhasil disimpan!")  # Debugging log
+        return jsonify({"message": "Data berhasil disimpan!"}), 200
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error: {str(e)}")  # Debugging log
+        return jsonify({"message": f"Error: {str(e)}"}), 500
+
