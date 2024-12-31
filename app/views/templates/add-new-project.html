@@ -50,7 +50,7 @@
                         </div>
                     </div><br />
 
-                    <button type="submit" class="btn btn-danger" style="margin-right: 10px;">Reset</button>  
+                    <button type="button" onclick="resetForm()" class="btn btn-danger" style="margin-right: 10px;">Reset</button>  
                     <button type="submit" class="btn btn-primary">Simpan</button>
                 </form>
             </div>
@@ -157,6 +157,11 @@
         }
     });
     
+    function resetForm(){
+        document.getElementById('project-form').reset()
+        document.getElementById('flatpickr-range').flatpickr().clear()
+    }
+
 </script>
 
 {% endblock %}
