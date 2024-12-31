@@ -245,18 +245,18 @@ def add_partisipasi():
 
         # Insert data untuk BO
         for bo in bo_data:
-            print("Proses BO:", bo)  # Debugging log
+            # print("Proses BO:", bo)  # Debugging log
             id_kriteria = uuid.UUID(bo['id_kriteria'])
             skor = bo['skor']
-            new_partisipasi = DetailPartisipasi2(nip=nip, id_kriteria=id_kriteria, opsi='BO', skor=skor)
+            new_partisipasi = DetailPartisipasi2(nip=nip, id_kriteria=id_kriteria, opsi='bo', skor=skor)
             db.session.add(new_partisipasi)
 
         # Insert data untuk WO
         for wo in wo_data:
-            print("Proses WO:", wo)  # Debugging log
+            # print("Proses WO:", wo)  # Debugging log
             id_kriteria = uuid.UUID(wo['id_kriteria'])
             skor = wo['skor']
-            new_partisipasi = DetailPartisipasi2(nip=nip, id_kriteria=id_kriteria, opsi='WO', skor=skor)
+            new_partisipasi = DetailPartisipasi2(nip=nip, id_kriteria=id_kriteria, opsi='ow', skor=skor)
             db.session.add(new_partisipasi)
 
         # Commit perubahan ke database

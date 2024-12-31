@@ -104,8 +104,14 @@
 
     document.getElementById('project-form').addEventListener('submit', async function(event) {
         event.preventDefault();
-        var formData = new FormData(this);
 
+        // Validasi input sebelum submit
+        var isValid = validateForm();
+        if (!isValid) {
+            return; // Hentikan jika validasi gagal
+        }
+
+        var formData = new FormData(this);
         var criteriaContainer = document.getElementById('criteria-container');
         var criteria = criteriaContainer.children;
 
@@ -114,13 +120,13 @@
             formData.append('kriteria[]', input.value);
         }
 
-        try{
+        try {
             var response = await fetch('/proyek', {
                 method: 'POST',
                 body: formData
-            })
-            var result = await response.json()
-            if(response.ok){
+            });
+            var result = await response.json();
+            if (response.ok) {
                 Swal.fire({
                     title: 'Sukses!',
                     text: result.message,
@@ -131,9 +137,9 @@
                     buttonsStyling: false
                 });
                 setTimeout(() => {
-                    window.location.href = '/listProjectOwner'
+                    window.location.href = '/listProjectOwner';
                 }, 2000);
-            }else{
+            } else {
                 Swal.fire({
                     title: 'Oops!',
                     text: 'Data gagal disimpan.',
@@ -156,12 +162,64 @@
             });
         }
     });
-    
-    function resetForm(){
-        document.getElementById('project-form').reset()
-        document.getElementById('flatpickr-range').flatpickr().clear()
+
+    function validateForm() {
+        // Ambil semua input yang wajib diisi
+        var requiredFields = [
+            { id: 'basic-default-fullname', name: 'Nama Proyek' },
+            { id: 'basic-default-message', name: 'Deskripsi Proyek' },
+            { id: 'flatpickr-range', name: 'Periode Partisipan' },
+            { id: 'basic-default-respondents', name: 'Jumlah Responden' },
+            { id: 'num-criteria', name: 'Jumlah Kriteria' }
+        ];
+
+        // Validasi input
+        for (var field of requiredFields) {
+            var input = document.getElementById(field.id);
+            if (!input.value.trim()) {
+                Swal.fire({
+                    title: 'Validasi Gagal!',
+                    text: `${field.name} tidak boleh kosong.`,
+                    icon: 'error',
+                    customClass: {
+                        confirmButton: 'btn btn-primary waves-effect waves-light'
+                    },
+                    buttonsStyling: false
+                });
+                input.focus(); // Fokus ke input yang gagal
+                return false; // Hentikan validasi
+            }
+        }
+
+        // Validasi tambahan untuk kriteria
+        var numCriteria = parseInt(document.getElementById('num-criteria').value) || 0;
+        var criteriaContainer = document.getElementById('criteria-container');
+        for (var i = 0; i < numCriteria; i++) {
+            var input = criteriaContainer.children[i].children[1];
+            if (!input.value.trim()) {
+                Swal.fire({
+                    title: 'Validasi Gagal!',
+                    text: `Kriteria ${i + 1} tidak boleh kosong.`,
+                    icon: 'error',
+                    customClass: {
+                        confirmButton: 'btn btn-primary waves-effect waves-light'
+                    },
+                    buttonsStyling: false
+                });
+                input.focus(); // Fokus ke input kriteria yang gagal
+                return false; // Hentikan validasi
+            }
+        }
+
+        return true; // Semua validasi berhasil
     }
 
+    function resetForm() {
+        document.getElementById('project-form').reset();
+        document.getElementById('flatpickr-range').flatpickr().clear();
+        document.getElementById('criteria-container').innerHTML = ''; // Hapus semua kriteria
+        document.getElementById('criteria-card').style.visibility = 'hidden'; // Sembunyikan card kriteria
+    }
 </script>
 
 {% endblock %}

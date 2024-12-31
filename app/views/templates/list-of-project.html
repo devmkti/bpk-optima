@@ -36,11 +36,18 @@
         url: "/api/proyek",
         dataSrc: "",
       },
-      columns: [
-        { data: "nama_proyek" },
-        { data: "deskripsi" },
-        { data: "periode_mulai" },
-        { data: "periode_selesai" },
+      columns: [{
+          data: "nama_proyek"
+        },
+        {
+          data: "deskripsi"
+        },
+        {
+          data: "periode_mulai"
+        },
+        {
+          data: "periode_selesai"
+        },
         {
           data: null, // Kolom untuk tombol
           orderable: false, // Nonaktifkan pengurutan untuk kolom ini
@@ -68,16 +75,33 @@
     $("#proyekTable").on("click", ".participate-btn", function () {
       const id = $(this).data("id");
       // Contoh: Aksi partisipasi, bisa AJAX atau navigasi
-      if (confirm("Are you sure to participate in this project?")) {
-        window.location.href = `/proyek/${id}/participate`;
-        // $.get(`/proyek/${id}/participate`, function (response) {
-        //     alert(response.message || "Participation successful!");
-        //     // table.ajax.reload(); // Reload data table
-        //     window.location.href = `/proyek/${id}/participate`;
-        // }).fail(function () {
-        //     alert("Failed to participate. Please try again.");
-        // });
-      }
+      // if (confirm("Are you sure to participate in this project?")) {
+
+      //   // $.get(`/proyek/${id}/participate`, function (response) {
+      //   //     alert(response.message || "Participation successful!");
+      //   //     // table.ajax.reload(); // Reload data table
+      //   //     window.location.href = `/proyek/${id}/participate`;
+      //   // }).fail(function () {
+      //   //     alert("Failed to participate. Please try again.");
+      //   // });
+      // }
+      Swal.fire({
+        title: 'Konfirmasi',
+        text: "Are you sure to participate in this project?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes',
+        customClass: {
+          confirmButton: 'btn btn-primary me-3 waves-effect waves-light',
+          cancelButton: 'btn btn-label-secondary waves-effect waves-light'
+        },
+        buttonsStyling: false
+      }).then(function (result) {
+        if (result.value) {
+
+          window.location.href = `/proyek/${id}/participate`;
+        }
+      });
     });
   });
 </script>

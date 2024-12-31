@@ -14,13 +14,13 @@
             <div class="row g-3">
                 <div class="col-md-6">
                     <label class="form-label" for="nama-proyek">Nama Proyek</label>
-                    <input type="text" id="nama-proyek" class="form-control" name="nama_proyek"
+                    <input type="text" id="nama-proyek" class="form-control" name="nama_proyek" disabled
                         value="{{ proyek.nama_proyek }}">
                 </div>
 
                 <div class="col-md-6">
                     <label class="form-label" for="deskripsi">Deskripsi</label>
-                    <input type="text" id="deskripsi" class="form-control" name="deskripsi"
+                    <input type="text" id="deskripsi" class="form-control" name="deskripsi" disabled
                         value="{{ proyek.deskripsi }}">
                 </div>
 
@@ -30,10 +30,15 @@
                         value="{{ proyek.periode_mulai }} s/d {{ proyek.periode_selesai }}" disabled>
                 </div>
 
-                <div class="col-md-6">
+                <div class="col-md-3">
                     <label class="form-label" for="jumlah-responden">Jumlah Responden</label>
-                    <input type="number" id="jumlah-responden" class="form-control" name="jumlah_responden"
+                    <input type="number" id="jumlah-responden" class="form-control" name="jumlah_responden" disabled
                         value="{{ proyek.jumlah_responden }}">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label" for="jumlah-kriteria">Jumlah Kriteria</label>
+                    <input type="number" id="jumlah-kriteria" class="form-control" name="jumlah_kirteria" disabled
+                        value="{{ proyek.jumlah_kriteria }}">
                 </div>
             </div>
 
@@ -73,12 +78,12 @@
 
                             <div class="row g-3">
                                 {% for kriteria in kriterias %}
-                                <div class="col-md-10">
+                                <div class="col-md-11">
                                     <label class="form-label">Kriteria {{ loop.index }}</label>
                                     <input type="text" class="form-control" value="{{ kriteria.nama_kriteria }}"
                                         disabled>
                                 </div>
-                                <div class="col-md-2">
+                                <div class="col-md-1">
                                     <label class="form-label">Nilai</label>
                                     <input type="number" class="form-control" name="bo_nilai[]" placeholder="1-9"
                                         data-id_kriteria="{{ kriteria.id_kriteria }}">
@@ -101,12 +106,12 @@
 
                             <div class="row g-3">
                                 {% for kriteria in kriterias %}
-                                <div class="col-md-10">
+                                <div class="col-md-11">
                                     <label class="form-label">Kriteria {{ loop.index }}</label>
                                     <input type="text" class="form-control" value="{{ kriteria.nama_kriteria }}"
                                         disabled>
                                 </div>
-                                <div class="col-md-2">
+                                <div class="col-md-1">
                                     <label class="form-label">Nilai</label>
                                     <input type="number" class="form-control" name="bo_nilai[]" placeholder="1-9"
                                         data-id_kriteria="{{ kriteria.id_kriteria}}">
@@ -119,7 +124,7 @@
             </div>
             <div class="card-body">
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-12">
                         <div class="mb-3">
                             <label class="form-label">Pilih Kriteria Best (Terbaik)</label>
                             <select class="form-control" name="selected_bo" id="boDropdown">
@@ -130,7 +135,7 @@
                             </select>
                         </div>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-12">
                         <div class="mb-3">
                             <label class="form-label">Pilih Kriteria Worst (Terburuk)</label>
                             <select class="form-control" name="selected_ow" id="owDropdown">
@@ -146,7 +151,7 @@
             </div>
             <div class="pt-4">
                 <button type="submit" class="btn btn-primary me-sm-3">Submit</button>
-                <button type="reset" class="btn btn-secondary">Cancel</button>
+                <a href="/listOfProject" class="btn btn-secondary">Cancel</a>
             </div>
         </form>
     </div>
@@ -165,7 +170,7 @@
 
         const boData = [];
         let isBoValid = true;
-        document.querySelectorAll("#collapseBO .row .col-md-2 input").forEach((input) => {
+        document.querySelectorAll("#collapseBO .row .col-md-1 input").forEach((input) => {
             const idKriteria = input.dataset.id_kriteria;
             const skor = input.value.trim();
 
@@ -176,7 +181,7 @@
                 boData.push({
                     nip: "1234",
                     id_kriteria: idKriteria,
-                    opsi: "BTO",
+                    opsi: "bo",
                     skor: parseInt(skor),
 
 
@@ -187,7 +192,7 @@
         // Ambil data WO
         const woData = [];
         let isWoValid = true;
-        document.querySelectorAll("#collapseOW .row .col-md-2 input").forEach((input) => {
+        document.querySelectorAll("#collapseOW .row .col-md-1 input").forEach((input) => {
             const idKriteria = input.dataset.id_kriteria;
             const skor = input.value.trim();
             // console.log(input.dataset.id_kriteria);
@@ -198,7 +203,7 @@
                 woData.push({
                     nip: "1234",
                     id_kriteria: idKriteria,
-                    opsi: "WTO",
+                    opsi: "ow",
                     skor: parseInt(skor),
                 });
             }
