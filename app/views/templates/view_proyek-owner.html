@@ -1,0 +1,250 @@
+{% extends 'layout/base.html' %} {% block title %}Detail Proyek{% endblock %} {% block content %}
+
+<!-- Content wrapper -->
+<div class="content-wrapper">
+  <!-- Content -->
+  <!-- Multi Column with Form Separator -->
+  <div class="card mb-4">
+    <h5 class="card-header">View Proyek</h5>
+    <!-- <form class="card-body"> -->
+    <div class="card-body">
+      <h6>1. INFORMASI UMUM</h6>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label" for="multicol-username">Nama Proyek</label>
+          <input type="text" id="multicol-username" class="form-control" value="{{proyek.nama_proyek}}" />
+        </div>
+        <div class="col-md-6">
+          <label class="form-label" for="multicol-email">Periode</label>
+          <input type="text" id="multicol-username" class="form-control" value="{{proyek.periode_mulai}} s/d {{proyek.periode_selesai}}" />
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Deskripsi</label>
+          <textarea style="resize: yes" id="" rows="5" class="form-control" disabled> {{proyek.deskripsi}} </textarea>
+        </div>
+        <div class="col-md-2">
+          <label class="form-label" for="multicol-confirm-password">Jumlah Kriteria</label>
+          <div class="input-group input-group-merge">
+            <input type="text" id="multicol-username" class="form-control" value="{{proyek.jumlah_kriteria}}" />
+          </div>
+        </div>
+        <div class="col-md-2">
+          <label class="form-label" for="multicol-confirm-password">Jumlah Responden</label>
+          <div class="input-group input-group-merge">
+            <input type="text" id="multicol-username" class="form-control" value="{{proyek.jumlah_responden}}" />
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- </form> -->
+  </div>
+  <!-- WINDOWS 2 -->
+  <div class="card mb-4">
+    <div class="card-header">
+      <div class="accordion" id="collapsibleSection">
+        <!-- Card Collapsible for Kriteria yang Dinilai-->
+        <div class="card accordion-item">
+          <h2 class="accordion-header" id="headingKriteria">
+            <button type="button" class="accordion-button" data-bs-toggle="collapse" data-bs-target="#collapseKriteria" aria-expanded="true" aria-controls="collapseKriteria">2. DAFTAR NAMA RESPONDEN</button>
+          </h2>
+          <!-- Looping Kriteria-->
+          <div id="collapseKriteria" class="accordion-collapse collapse show" data-bs-parent="#collapsibleSection">
+            <div class="accordion-body">
+              <div class="md-6">
+                <table id="daftarpegawai" style="width: fit-content" class="table table-bordered">
+                  <thead>
+                    <tr>
+                      <th>Nip</th>
+                      <th>Nama</th>
+                      <th>Aksi</th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    {% for cols in view_po %}
+                    <tr>
+                      <td>{{ cols[0] }}</td>
+                      <td>{{ cols[2] }}</td>
+                      <td><button class="btn btn-success btn-sm view-btn" data-id="{{cols[0]}}&{{cols[1]}}">View</button></td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- end of Card Collapsible for Kriteria yang Dinilai-->
+        <div class="card-footer">
+          <button class="btn btn-primary btn-md simulate-btn" data-id="1">Simulasikan</button>&nbsp;
+          <button class="btn btn-danger btn-md endproject-btn" data-id="1">Akhiri Proyek</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- end WINDOWS 2 -->
+  <!-- WINDOWS 3 -->
+  <div class="card mb-4">
+    <div class="card-header">
+      <div class="accordion" id="collapsibleSection">
+        <!-- Card Collapsible for CHART RESULT -->
+        <div class="card accordion-item">
+          <h2 class="accordion-header" id="headingResult">
+            <button type="button" class="accordion-button" data-bs-toggle="collapse" data-bs-target="#collapseResult" aria-expanded="true" aria-controls="collapseResult">3. RESULT</button>
+          </h2>
+          <!-- Looping Kriteria-->
+          <div id="collapseResult" class="accordion-collapse collapse show" data-bs-parent="#collapsibleSection">
+            <div class="accordion-body">
+              <!-- <div class="md-6"> -->
+              <div class="row">
+                <!-- Bar Charts -->
+                <div class="col-xl-6 col-12 mb-4">
+                  <div class="card">
+                    <div class="card-header header-elements">
+                      <h5 class="card-title mb-0">Statistik Deskriptif</h5>
+                      <div class="card-action-element ms-auto py-0">
+                        <div class="dropdown">
+                          <button type="button" class="btn dropdown-toggle px-0" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="ti ti-calendar"></i>
+                          </button>
+                          <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                              <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Today</a>
+                            </li>
+                            <li>
+                              <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Yesterday</a>
+                            </li>
+                            <li>
+                              <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Last 7 Days</a>
+                            </li>
+                            <li>
+                              <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Last 30 Days</a>
+                            </li>
+                            <li>
+                              <hr class="dropdown-divider" />
+                            </li>
+                            <li>
+                              <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Current Month</a>
+                            </li>
+                            <li>
+                              <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Last Month</a>
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="card-body">
+                      <canvas id="barChart" class="chartjs" data-height="400"></canvas>
+                    </div>
+                  </div>
+                </div>
+                <!-- /Bar Charts -->
+
+                <div class="col-xl-6 col-12 mb-4">
+                  <div class="card">
+                    <div class="card-header header-elements">
+                      <h5 class="card-title mb-0">Statistik Bayessian</h5>
+                      <div class="card-action-element ms-auto py-0">
+                        <div class="dropdown">
+                          <button type="button" class="btn dropdown-toggle px-0" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="ti ti-calendar"></i>
+                          </button>
+                          <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                              <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Today</a>
+                            </li>
+                            <li>
+                              <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Yesterday</a>
+                            </li>
+                            <li>
+                              <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Last 7 Days</a>
+                            </li>
+                            <li>
+                              <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Last 30 Days</a>
+                            </li>
+                            <li>
+                              <hr class="dropdown-divider" />
+                            </li>
+                            <li>
+                              <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Current Month</a>
+                            </li>
+                            <li>
+                              <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Last Month</a>
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="card-body">
+                      <canvas id="barChartBayesian" class="chartjs" data-height="400"></canvas>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-footer">
+        <a href="/listProjectOwner" class="btn btn-secondary">Kembali</a>
+      </div>
+    </div>
+    <!-- end of CHART RESULT-->
+  </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+<script>
+  $(document).ready(function () {
+    // Inisialisasi DataTable
+    $("#daftarpegawai").DataTable();
+    // $("#daftarpegawai").DataTable({
+    //   ajax: {
+    //     url: "/api/proyek",
+    //     dataSrc: "",
+    //   },
+    //   columns: [
+    //     {
+    //       data: "nip",
+    //     },
+    //     {
+    //       data: "nama_pegawai",
+    //     },
+    //     {
+    //       data: null, // Kolom untuk tombol
+    //       orderable: false, // Nonaktifkan pengurutan untuk kolom ini
+    //       render: function (data, type, row) {
+    //         return `<button class="btn btn-primary btn-sm detail-btn" data-id="${row.id}">Detail</button>
+    //                           <button class="btn btn-success btn-sm view-btn" data-id="${row.id}">View</button>
+    //                           <button class="btn btn-warning btn-sm edit-btn" data-id="${row.id}">Edit</button>`;
+    //       },
+    //     },
+    //   ],
+    // });
+
+    // ------------------------
+    // Event listener untuk tombol View
+    $("#daftarpegawai").on("click", ".view-btn", function () {
+      const [nip, viewid] = $(this).data("id").split("&");
+      // Ambil data proyek berdasarkan ID
+      $.get(`/proyek/${viewid}/view_pod/${nip}`, function (data) {
+        window.location.href = `/proyek/${viewid}/view_pod/${nip}`;
+      }).fail(function () {
+        alert("Gagal memuat detail proyek. Silakan coba lagi.");
+      });
+    });
+    // ------------------------
+    // Event listener untuk tombol View
+    $("#daftarpegawai").on("click", ".simulate-btn", function () {
+      const [nip, viewid] = $(this).data("id").split("&");
+      // Ambil data proyek berdasarkan ID
+      $.get(`/proyek/calculate/${viewid}/${nip}`, function (data) {
+        window.location.href = `/proyek/${viewid}/view_pod/${nip}`;
+      }).fail(function () {
+        alert("Gagal memuat detail proyek. Silakan coba lagi.");
+      });
+    });
+    // ------------------------
+  });
+</script>
+{% endblock %}

@@ -4,11 +4,17 @@ from flask import Blueprint, render_template, request, jsonify
 from app.controllers.proyek_controller import *
 from app.models.proyek import Proyek
 from app.models.kriteria import Kriteria
-from app.models.partisipate import Partisipasi,Partisipasi1
+from app.models.partisipate import DetailPartisipasi1, DetailPartisipasi2, Pegawai
 from app.database import db
 
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.orm import aliased
+
+import pandas as pd
+import numpy as np
+from pulp import LpProblem, LpVariable, LpMinimize, LpMaximize, lpSum, PULP_CBC_CMD, LpStatus
+
 
 main_bp = Blueprint('main', __name__, template_folder='views/templates')
 
@@ -44,12 +50,67 @@ def get_project():
     result = get_proyek()
     return jsonify(result)
 
-# Route untuk melihat detail proyek
+# Route untuk melihat view proyek
 @main_bp.route('/proyek/<uuid:id>/view', methods=['GET'])
-# @main_bp.route('/proyek/view', methods=['GET'])
 def view_proyek(id):
     proyek = Proyek.query.get_or_404(id)
-    return render_template('view_proyek.html', proyek=proyek)
+    kriterias = db.session.query(Proyek.id, Kriteria.nama_kriteria).join(Kriteria, Proyek.id == Kriteria.id_proyek, isouter=True).where(Proyek.id == id).all()
+    temp = []
+    for k in kriterias:
+      temp.append(k[1])
+
+    return render_template('view_proyek.html', proyek=proyek, kriterias=temp)
+
+
+# Route untuk melihat view proyek OWNER
+@main_bp.route('/proyek/<uuid:id>/view_po', methods=['GET'])
+def view_po(id):
+    proyek = Proyek.query.get_or_404(id)
+      
+    # Subquery AA
+    subquery_aa = db.session.query(
+        Proyek.nama_proyek.label('nama_proyek'),
+        Kriteria.nama_kriteria.label('nama_kriteria'),
+        Proyek.id.label('proyek_id'),
+        Kriteria.id.label('kriteria_id')
+    ).join(Kriteria, Proyek.id == Kriteria.id_proyek).filter(Proyek.id == id).subquery()
+
+    # Subquery BB
+    subquery_bb = db.session.query(
+    #results = db.session.query(
+        DetailPartisipasi1.nip.label('nip'),
+        subquery_aa.c.nama_kriteria.label('nama_kriteria'),
+        #DetailPartisipasi1.best_to_others.label('bo'),
+        #DetailPartisipasi1.others_to_worst.label('ow'),
+        subquery_aa.c.proyek_id.label('proyek_id'),
+        subquery_aa.c.kriteria_id.label('kriteria_id')
+    ).join(subquery_aa, subquery_aa.c.proyek_id == DetailPartisipasi1.id_proyek
+    #).filter(
+    #    DetailPartisipasi1.nip == nip_filter
+    ).subquery()
+
+    # # Final Query
+    results = db.session.query(
+        subquery_bb.c.nip.label('nip'),
+        subquery_bb.c.proyek_id,
+        Pegawai.nama.label('nama_pegawai')  # Menampilkan nama pegawai
+        #subquery_bb.c.nama_kriteria,
+        # subquery_bb.c.best_to_others,
+        # subquery_bb.c.others_to_worst,
+        # DetailPartisipasi2.opsi,
+        # DetailPartisipasi2.skor,
+        #DetailPartisipasi2.id_proyek
+        # DetailPartisipasi2.id_kriteria
+    ).join(
+        DetailPartisipasi2,
+        (subquery_bb.c.nip == DetailPartisipasi2.nip) &
+        # (subquery_bb.c.proyek_id == DetailPartisipasi2.id_proyek) &
+        (subquery_bb.c.kriteria_id == DetailPartisipasi2.id_kriteria)
+    ).join(
+        Pegawai, subquery_bb.c.nip == Pegawai.nip  # Join tabel Pegawai
+    ).distinct().all()
+    
+    return render_template('view_proyek-owner.html', proyek=proyek, view_po=results)
 
 @main_bp.route('/api/proyek/<uuid:project_id>', methods=['GET'])
 def api_get_project_details(project_id):
@@ -187,7 +248,7 @@ def add_partisipasi():
             print("Proses BO:", bo)  # Debugging log
             id_kriteria = uuid.UUID(bo['id_kriteria'])
             skor = bo['skor']
-            new_partisipasi = Partisipasi(nip=nip, id_kriteria=id_kriteria, opsi='BO', skor=skor)
+            new_partisipasi = DetailPartisipasi2(nip=nip, id_kriteria=id_kriteria, opsi='BO', skor=skor)
             db.session.add(new_partisipasi)
 
         # Insert data untuk WO
@@ -195,11 +256,11 @@ def add_partisipasi():
             print("Proses WO:", wo)  # Debugging log
             id_kriteria = uuid.UUID(wo['id_kriteria'])
             skor = wo['skor']
-            new_partisipasi = Partisipasi(nip=nip, id_kriteria=id_kriteria, opsi='WO', skor=skor)
+            new_partisipasi = DetailPartisipasi2(nip=nip, id_kriteria=id_kriteria, opsi='WO', skor=skor)
             db.session.add(new_partisipasi)
 
         # Commit perubahan ke database
-        new_proyek_dropdown = Partisipasi1(
+        new_proyek_dropdown = DetailPartisipasi1(
             nip=nip,
             id_proyek=id_proyek,
             best_to_others=best_to_others,
@@ -214,3 +275,160 @@ def add_partisipasi():
         print(f"Error: {str(e)}")  # Debugging log
         return jsonify({"message": f"Error: {str(e)}"}), 500
 
+@main_bp.route('/proyek/<uuid:id>/view_pod/<nip>', methods=['GET'])
+def calculate(id,nip):
+    #data = request.json
+
+    proyek = Proyek.query.get_or_404(id)
+    nama_pegawai=get_namapegawai(nip)
+    # Alias tabel untuk subquery
+    proyek_alias = aliased(Proyek)
+    kriteria_alias = aliased(Kriteria)
+
+    # Subquery: bagian "AA" dalam SQL
+    subquery = (
+        db.session.query(
+            proyek_alias.nama_proyek.label("nama_proyek"),
+            kriteria_alias.nama_kriteria.label("nama_kriteria"),
+            proyek_alias.id.label("proyek_id"),
+            kriteria_alias.id.label("kriteria_id")
+        )
+        .join(kriteria_alias, proyek_alias.id == kriteria_alias.id_proyek)
+        .filter(proyek_alias.id == id )
+        .subquery()  # Membuat subquery
+    )
+
+    # Query utama
+    kriterias = (
+        db.session.query(
+            DetailPartisipasi2.nip,
+            subquery.c.nama_kriteria,
+            DetailPartisipasi2.opsi,
+            DetailPartisipasi2.skor,
+            subquery.c.kriteria_id,
+            DetailPartisipasi1.best_to_others,
+            DetailPartisipasi1.others_to_worst,
+            DetailPartisipasi2.opsi
+                
+        )
+        .join(subquery, subquery.c.kriteria_id == DetailPartisipasi2.id_kriteria)
+        .join(DetailPartisipasi1, DetailPartisipasi2.nip == DetailPartisipasi1.nip)
+        .filter(DetailPartisipasi2.nip == nip)
+        .all()
+    )
+
+    # Array untuk data kriteria
+    kriter = []
+    nm_kriter = []
+    n_BO = []
+    n_OW = []
+    for field in kriterias:
+        if field[7] == 'bo':
+            kriter.append(str(field[4]))
+            nm_kriter.append(str(field[1]))
+            best_criterion = str(field[5])
+            worst_criterion = str(field[6])
+            n_BO.append(str(field[3]))
+        if field[7] == 'ow':
+            n_OW.append(str(field[3]))
+
+    #return worst_criterion
+    criteria = kriter
+    lcriteria = nm_kriter
+    goal = 'minimize'  # Default to 'minimize'
+    best_to_others = np.array(n_BO, dtype=float)
+    others_to_worst = np.array(n_OW, dtype=float)
+    
+    n = len(criteria)
+    best_index = criteria.index(best_criterion)
+    worst_index = criteria.index(worst_criterion)
+    
+    # Solve using descriptive statistics (direct BO/OW)
+    weights_descriptive, consistency_descriptive = solve_bwm(best_to_others, others_to_worst, criteria, best_index, worst_index, goal)
+
+    # Solve using Bayesian approach (adjust prior BO/OW with weights)
+    priors = [1 / n] * n
+    bayesian_bo = [bo * prior for bo, prior in zip(best_to_others, priors)]
+    bayesian_ow = [ow * prior for ow, prior in zip(others_to_worst, priors)]
+    weights_bayesian, consistency_bayesian = solve_bwm(bayesian_bo, bayesian_ow, criteria, best_index, worst_index, goal)
+
+    # Create DataFrame for visualization
+    df_results = pd.DataFrame({
+        "Criteria": lcriteria,
+        "Weights_Descriptive": weights_descriptive,
+        "Weights_Bayesian": weights_bayesian
+    }).set_index("Criteria")
+
+    # Gabungkan kedua list menjadi pasangan
+    paired_data = list(zip(lcriteria, weights_descriptive))
+    paired_databayes = list(zip(lcriteria, weights_bayesian))
+    #print(paired_data)
+
+    # Add consistency columns to the DataFrame
+    df_results["Consistency_Descriptive"] = consistency_descriptive
+    df_results["Consistency_Bayesian"] = consistency_bayesian
+
+    # Convert data to JSON for Chart.js
+    weights_descriptive_json = json.dumps(weights_descriptive)
+    weights_bayesian_json = json.dumps(weights_bayesian)
+    criteria_json = json.dumps(lcriteria)
+
+    #print ("Weights Descriptive:", weights_descriptive)
+    #return weights_descriptive_json
+    # weights_descriptive_json = weights_descriptive
+    # weights_bayesian_json = weights_bayesian
+    # criteria_json = criteria
+
+    # Pass data to the template
+    return render_template('view_proyek-owner-detil2.html',
+                           proyek=proyek, kriterias=kriterias, nip=nip, nama=nama_pegawai,paired_data=paired_data,paired_databayes=paired_databayes,
+                           df_results=df_results.to_html(classes="table table-striped", index=True),
+                           weights_descriptive_json=weights_descriptive_json,
+                           weights_bayesian_json=weights_bayesian_json,
+                           criteria_json=criteria_json)
+#     return render_template('view_proyek-owner-detil2.html', proyek=proyek, kriterias=kriterias, nip=nip, nama=nama_pegawai,paired_data=paired_data)
+
+# Function to solve Best Worst Method
+def solve_bwm(best_to_others, others_to_worst, criteria, best_index, worst_index, goal):
+    # Define the problem
+    # Define problem
+    if goal == 'minimize':
+        prob = LpProblem("Best_Worst_Method", LpMinimize)
+    elif goal == 'maximize':
+        prob = LpProblem("Best_Worst_Method", LpMaximize)
+    else:
+        return jsonify({'error': 'Invalid goal. Use "minimize" or "maximize".'}), 400
+    
+
+    n = len(criteria)
+    # prob = LpProblem("Best_Worst_Method", LpMinimize)
+    weights = [LpVariable(f'w{i}', lowBound=0) for i in range(n)]
+    xi = LpVariable('xi', lowBound=0)
+    prob += xi, "Objective_Xi"
+    
+    # Constraints for Best-to-Others
+    for i in range(n):
+        if i != best_index:
+            prob += weights[best_index] - best_to_others[i] * weights[i] <= xi
+            prob += weights[best_index] - best_to_others[i] * weights[i] >= -xi
+
+    # Constraints for Others-to-Worst
+    for i in range(n):
+        if i != worst_index:
+            prob += weights[i] - others_to_worst[i] * weights[worst_index] <= xi
+            prob += weights[i] - others_to_worst[i] * weights[worst_index] >= -xi
+
+    # Sum of weights = 1
+    prob += lpSum(weights) == 1
+    
+    # Solve
+    solver = PULP_CBC_CMD(msg=False)
+    prob.solve(solver)
+    
+    # Results
+    if prob.status == 1:
+        weights_values = [w.varValue for w in weights]
+        consistency_ratio = xi.varValue
+        return weights_values, consistency_ratio
+    else:
+        return None, None

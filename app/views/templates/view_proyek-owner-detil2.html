@@ -1,0 +1,344 @@
+{% extends 'layout/base.html' %} {% block title %}Detail Proyek{% endblock %} {% block content %}
+
+<!-- Content wrapper -->
+<div class="content-wrapper">
+  <!-- Content -->
+  <!-- Multi Column with Form Separator -->
+  <div class="card mb-4">
+    <h5 class="card-header">View Proyek</h5>
+    <!-- <form class="card-body"> -->
+    <div class="card-body">
+      <h6>1. INFORMASI UMUM</h6>
+      <div class="row">
+        <div class="col-md-6">
+          <label class="form-label" for="multicol-confirm-password">NIP</label>
+          <div class="input-group input-group-merge">
+            <input type="text" id="multicol-username" class="form-control" value="{{nip}}" />
+          </div>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label" for="multicol-confirm-password">Nama Responden</label>
+          <div class="input-group input-group-merge">
+            <input type="text" id="multicol-username" class="form-control" value="{{nama}}" />
+          </div>
+        </div>
+      </div>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label" for="multicol-username">Nama Proyek</label>
+          <input type="text" id="multicol-username" class="form-control" value="{{proyek.nama_proyek}}" />
+        </div>
+        <div class="col-md-6">
+          <label class="form-label" for="multicol-email">Periode</label>
+          <input type="text" id="multicol-username" class="form-control" value="{{proyek.periode_mulai}} s/d {{proyek.periode_selesai}}" />
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Deskripsi</label>
+          <textarea style="resize: yes" id="" rows="5" class="form-control" disabled> {{proyek.deskripsi}} </textarea>
+        </div>
+        <div class="col-md-2">
+          <label class="form-label" for="multicol-confirm-password">Jumlah Kriteria</label>
+          <div class="input-group input-group-merge">
+            <input type="text" id="multicol-username" class="form-control" value="{{proyek.jumlah_kriteria}}" />
+          </div>
+        </div>
+        <div class="col-md-2">
+          <label class="form-label" for="multicol-confirm-password">Jumlah Responden</label>
+          <div class="input-group input-group-merge">
+            <input type="text" id="multicol-username" class="form-control" value="{{proyek.jumlah_responden}}" />
+          </div>
+        </div>
+        <br />
+      </div>
+    </div>
+    <!-- </form> -->
+  </div>
+  <div class="card mb-4">
+    <div class="card-header">
+      <div class="accordion" id="collapsibleSection">
+        <!-- Card Collapsible for Kriteria yang Dinilai-->
+        <div class="card accordion-item">
+          <h2 class="accordion-header" id="headingKriteria">
+            <button type="button" class="accordion-button" data-bs-toggle="collapse" data-bs-target="#collapseKriteria" aria-expanded="true" aria-controls="collapseKriteria">2. KRITERIA YANG DINILAI</button>
+          </h2>
+          <!-- Looping Kriteria-->
+          <div id="collapseKriteria" class="accordion-collapse collapse show" data-bs-parent="#collapsibleSection">
+            <div class="accordion-body">
+              <div class="md-6">
+                <div class="row">
+                  <div class="col-xl-6 col-12 mb-4">
+                    <div class="card">
+                      <h3 style="margin-left: 12px; margin-top: 12px">Best to Others</h3>
+                      <table style="margin-left: 12px; width: fit-content" class="table table-bordered">
+                        <thead>
+                          <tr>
+                            <th><b>Kriteria</b></th>
+                            <th><b>Skor</b></th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {% for cols in kriterias %} {% if cols[2] == 'bo' %}
+                          <!-- Menampilkan data dalam tabel mendatar -->
+                          <tr>
+                            <td {% if cols[4] == cols[5] %} style="background-color: lightgreen;" {% endif %}>{{ cols[1] }}</td>
+                            <td>{{ cols[3] }}</td>
+                          </tr>
+                          {% endif %} {% endfor %}
+                        </tbody>
+                      </table>
+                      <br>
+                      <table style="margin-left: 12px; width: 120px; height: 20px;">
+                        <tr>
+                          <td style="background-color: lightgreen; width:auto;text-align: center;">Best Criterion</td>
+                        </tr>
+                      </table>
+                      <br />
+                    </div>
+                  </div>
+                  <div class="col-xl-6 col-12 mb-4">
+                    <div class="card">
+                      <h3 style="margin-left: 12px; margin-top: 12px">Others to Worst</h3>
+                      <table style="margin-left: 12px; width: fit-content" class="table table-bordered">
+                        <thead>
+                          <tr>
+                            <th><b>Kriteria</b></th>
+                            <th><b>Skor</b></th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {% for cols in kriterias %} {% if cols[2] == 'ow' %}
+                          <!-- Menampilkan data dalam tabel mendatar -->
+                          <tr>
+                            <td {% if cols[4] == cols[6] %} style="background-color: lightsalmon;" {% endif %}>{{ cols[1] }}</td>
+                            <td>{{ cols[3] }}</td>
+                          </tr>
+                          {% endif %} {% endfor %}
+                        </tbody>
+                      </table>
+                      <br>
+                      <table style="margin-left: 12px; width: 120px; height: 20px;">
+                        <tr>
+                          <td style="background-color: lightsalmon; width:auto;text-align: center;">Worst Criterion</td>
+                        </tr>
+                      </table>
+                      <br />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- end of Card Collapsible for Kriteria yang Dinilai-->
+
+        <!-- Card Collapsible for CHART RESULT -->
+        <div class="card accordion-item">
+          <h2 class="accordion-header" id="headingResult">
+            <button type="button" class="accordion-button" data-bs-toggle="collapse" data-bs-target="#collapseResult" aria-expanded="true" aria-controls="collapseResult">3. RESULT</button>
+          </h2>
+          <!-- Looping Kriteria-->
+          <div id="collapseResult" class="accordion-collapse collapse show" data-bs-parent="#collapsibleSection">
+            <div class="accordion-body">
+              <!-- <div class="md-6"> -->
+                <div class="row">
+                  <!-- Bar Charts -->
+                  <div class="col-xl-6 col-12 mb-6">
+                    <div class="card">
+                      <div class="card-header header-elements">
+                        <h5 class="card-title mb-0">Statistik Deskriptif</h5>
+                        <div class="card-action-element ms-auto py-0">
+                          
+                        </div>
+                      </div>
+                      <div class="card-body">
+                        <canvas id="descriptiveChart" class="charts-chartjs" style="height: max-content;"></canvas>
+                        </div>
+                      </div>
+                  </div>
+                  <!-- /Bar Charts -->
+  
+                  <div class="col-xl-6 col-12 mb-4">
+                    <div class="card">
+                      <div class="card-header header-elements">
+                        <h5 class="card-title mb-0">Statistik Bayessian</h5>
+                        <div class="card-action-element ms-auto py-0">
+                          
+                        </div>
+                      </div>
+                      <div class="card-body">
+                        <canvas id="bayesianChart" style="height: max-content;"></canvas>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+            </div>
+            <div class="accordion-body">
+                <div class="row">
+                  <div class="col-xl-6 col-12 mb-6">
+                    <div class="card">
+                      <div class="card-body">
+                        <table style="margin-left: 12px; width: fit-content" class="table table-bordered">
+                          <thead>
+                            <tr>
+                              <th><b>Kriteria</b></th>
+                              <th><b>Bobot</b></th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {% for nm_krit, bobot in paired_data %}
+                            <!-- Menampilkan data dalam tabel mendatar -->
+                            <tr>
+                              <td>{{ nm_krit }}</td>
+                              <td>{{ bobot }}</td>
+                            </tr>
+                            {% endfor %}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-xl-6 col-12 mb-6">
+                    <div class="card">
+                      <div class="card-body">
+                        <table style="margin-left: 12px; width: fit-content" class="table table-bordered">
+                          <thead>
+                            <tr>
+                              <th><b>Kriteria</b></th>
+                              <th><b>Bobot</b></th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {% for nm_krit2, bobot2 in paired_databayes %}
+                            <!-- Menampilkan data dalam tabel mendatar -->
+                            <tr>
+                              <td>{{ nm_krit2 }}</td>
+                              <td>{{ bobot2 }}</td>
+                            </tr>
+                            {% endfor %}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div> 
+              <br>              
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- end of CHART RESULT-->
+      <div class="card-footer">
+        <a href="/listProjectOwner" class="btn btn-secondary">Kembali</a>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+        // Data dari Python ke JavaScript
+        const pairedData = {{ paired_data | tojson }};
+        //console.log(pairedData);
+
+        // Pisahkan labels (criteria) dan data (weights) dari pairedData
+        const labels = pairedData.map(item => item[0]); // Criteria
+        const weights = pairedData.map(item => item[1]); // Weights
+
+        // const labels = ['Keamanan','Gaya','Harga','Kualitas','Kenyamanan']; // Criteria
+        // const weights = [0.24,0.03,0.42,0.16,0.12]; // Weights
+
+        // Konfigurasi Chart.js
+        const ctx = document.getElementById('weightsChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar', // Jenis chart: bar
+            data: {
+                labels: labels, // Nama-nama criteria
+                datasets: [{
+                    label: 'Weights',
+                    data: weights, // Nilai weights
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Konfigurasi Chart.js
+        const bayes = document.getElementById('weightsChartBayes').getContext('2d');
+        new Chart(bayes, {
+            type: 'bar', // Jenis chart: bar
+            data: {
+                labels: labels, // Nama-nama criteria
+                datasets: [{
+                    label: 'Weights',
+                    data: weights, // Nilai weights
+                    backgroundColor: 'rgba(160, 170, 20, 0.8)',
+                    // backgroundColor: 'rgba(80, 200, 120, 0.5)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+</script>
+<!-- JavaScript for rendering Chart.js -->
+<script>
+  const ctxDescriptive = document.getElementById('descriptiveChart').getContext('2d');
+  const ctxBayesian = document.getElementById('bayesianChart').getContext('2d');
+  
+  const descriptiveChart = new Chart(ctxDescriptive, {
+      type: 'bar',
+      data: {
+          labels: {{ criteria_json | safe }},
+          datasets: [{
+              label: 'Weights (Descriptive)',
+              data: {{ weights_descriptive_json | safe }},
+              backgroundColor: 'rgba(54, 162, 235, 0.7)',
+              borderColor: 'rgba(54, 162, 235, 1)',
+              borderWidth: 1
+          }]
+      },
+      options: {
+          scales: {
+              y: {
+                  beginAtZero: true
+              }
+          }
+      }
+  });
+
+  const bayesianChart = new Chart(ctxBayesian, {
+      type: 'bar',
+      data: {
+          labels: {{ criteria_json | safe }},
+          datasets: [{
+              label: 'Weights (Bayesian)',
+              data: {{ weights_bayesian_json | safe }},
+              backgroundColor: 'rgba(160, 170, 20, 0.8)',
+              borderColor: 'rgba(75, 192, 192, 1)',
+              borderWidth: 1
+          }]
+      },
+      options: {
+          scales: {
+              y: {
+                  beginAtZero: true
+              }
+          }
+      }
+  });
+</script>
+{% endblock %}

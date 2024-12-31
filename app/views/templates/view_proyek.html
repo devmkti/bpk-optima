@@ -1,49 +1,69 @@
-{% extends 'layout/base.html' %}
+{% extends 'layout/base.html' %} {% block title %}Detail Proyek{% endblock %} {% block content %}
 
-{% block title %}Detail Proyek{% endblock %}
-
-{% block content %}
-<div class="col-lg-12">
-    <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <!-- <h5 class="mb-0"></h5> -->
-            <h4 class="mb-0 text-primary"> Detail Proyek</h4> 
-            <small class="text-muted float-end"></small>
+<!-- Content wrapper -->
+<div class="content-wrapper">
+  <!-- Content -->
+  <!-- Multi Column with Form Separator -->
+  <div class="card mb-4">
+    <h5 class="card-header">View Proyek</h5>
+    <!-- <form class="card-body"> -->
+    <div class="card-body">
+      <h6>1. Informasi Umum</h6>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label" for="multicol-username">Nama Proyek</label>
+          <input type="text" id="multicol-username" class="form-control" value="{{proyek.nama_proyek}}" />
         </div>
-        <div class="card-body">
-            <div class="container">
-                <!-- <h2>Detail Proyek</h2> -->
-                <table class="table">
-                    <tr>
-                        <th>Nama Proyek</th>
-                        <td>{{ proyek.nama_proyek }}</td>
-                    </tr>
-                    <tr>
-                        <th>Deskripsi</th>
-                        <td>{{ proyek.deskripsi }}</td>
-                    </tr>
-                    <tr>
-                        <th>Periode Mulai</th>
-                        <td>{{ proyek.periode_mulai }}</td>
-                    </tr>
-                    <tr>
-                        <th>Periode Selesai</th>
-                        <td>{{ proyek.periode_selesai }}</td>
-                    </tr>
-                    <tr>
-                        <th>Jumlah Kriteria</th>
-                        <td>{{ proyek.jumlah_kriteria }}</td>
-                    </tr>
-                    <tr>
-                        <th>Jumlah Responden</th>
-                        <td>{{ proyek.jumlah_responden }}</td>
-                    </tr>
-                </table>
-            </div>
+        <div class="col-md-6">
+          <label class="form-label" for="multicol-email">Periode</label>
+          <input type="text" id="multicol-username" class="form-control" value="{{proyek.periode_mulai}} s/d {{proyek.periode_selesai}}" />
         </div>
-        <div class="card-footer">
-            <a href="/" class="btn btn-secondary">Kembali</a>
+        <div class="col-md-6">
+          <label class="form-label">Deskripsi</label>
+          <textarea style="resize: yes" id="" rows="5" class="form-control" disabled> {{proyek.deskripsi}} </textarea>
         </div>
+        <div class="col-md-2">
+          <label class="form-label" for="multicol-confirm-password">Jumlah Kriteria</label>
+          <div class="input-group input-group-merge">
+            <input type="text" id="multicol-username" class="form-control" value="{{proyek.jumlah_kriteria}}" />
+          </div>
+        </div>
+        <div class="col-md-2">
+          <label class="form-label" for="multicol-confirm-password">Jumlah Responden</label>
+          <div class="input-group input-group-merge">
+            <input type="text" id="multicol-username" class="form-control" value="{{proyek.jumlah_responden}}" />
+          </div>
+        </div>
+      </div>
     </div>
+    <!-- </form> -->
+  </div>
+  <div class="card mb-4">
+    <div class="card-header">
+      <h6>2. Kriteria yang Dinilai</h6>
+      <!-- <div class="row g-3"> -->
+      <!-- Looping Kriteria-->
+      <div class="md-6">
+        <table class="table table-bordered">
+          <thead>
+            <th style="width: 1%"><b>No</b></th>
+            <th><b>Kriteria</b></th>
+          </thead>
+          <tbody>
+            {% for kriteria in kriterias %}
+            <tr>
+              <td>{{loop.index}}</td>
+              <td>{{ kriteria|e }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="card-footer">
+    <a href="/listOfProject" class="btn btn-secondary">Kembali</a>
+  </div>
 </div>
+
 {% endblock %}

@@ -5,6 +5,7 @@ from datetime import datetime
 # from app.models.model import Proyek
 from app.models.proyek import Proyek
 from app.models.kriteria import Kriteria
+from app.models.partisipate import DetailPartisipasi1, DetailPartisipasi2, Pegawai
 from sqlalchemy.dialects.postgresql import UUID
 from app.global_functions import *
 

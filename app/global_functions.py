@@ -1,6 +1,9 @@
 import datetime
 from sqlalchemy.ext.declarative import DeclarativeMeta
 import json
+from app.database import db
+from app.models.partisipate import Pegawai
+
 
 # Daftar nama bulan dalam bahasa Indonesia
 def list_bulan():
@@ -38,3 +41,11 @@ def get_full_date(time=""):
     year = time_obj.year
 
     return f"{day} {month} {year}"
+
+def get_namapegawai(nip):   
+    nmpeg = db.session.query(Pegawai.nama).filter_by(nip = nip).all()
+    return f"{nmpeg[0][0]}"
+
+def get_namakriteria(id):   
+    nmkrit = db.session.query(Kriteria.nama_kriteria).filter_by(id = id).all()
+    return f"{nmkrit[0][0]}"
