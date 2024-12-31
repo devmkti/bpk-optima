@@ -61,7 +61,7 @@ def simpan_proyek(request):
             periode_selesai=periode_akhir,
             jumlah_responden=jumlah_responden,
             jumlah_kriteria=jumlah_kriteria,
-            created_at=datetime.now()
+            created_at=datetime.datetime.now()
         )
         
         db.session.add(proyek)
