@@ -129,7 +129,8 @@
                     render: function (data, type, row) {
                         return `<button class="btn btn-primary btn-sm detail-btn" data-id="${row.id}">Detail</button>
                                 <button class="btn btn-success btn-sm view-btn" data-id="${row.id}">View</button>
-                                <button class="btn btn-warning btn-sm edit-btn" data-id="${row.id}">Edit</button>`;
+                                <button class="btn btn-warning btn-sm edit-btn" data-id="${row.id}">Edit</button>
+                                <button class="btn btn-danger btn-sm hapus-btn" data-id="${row.id}">Hapus</button>`;
                     }
                 },
             ],
@@ -160,7 +161,15 @@
                 $("#editProjectBtn").data("id", id);
                 $("#projectDetailModal").modal('show');
             }).fail(function () {
-                alert("Gagal memuat detail proyek. Silakan coba lagi.");
+                Swal.fire({
+                    title: 'Oops!',
+                    text: 'Gagal memuat data atau data sudah digunakan untuk transaksi.!',
+                    icon: 'error',
+                    customClass: {
+                        confirmButton: 'btn btn-primary waves-effect waves-light'
+                    },
+                    buttonsStyling: false
+                });
             });
         });
 
@@ -181,6 +190,65 @@
                 // $("#projectDetailModal").modal('show');
             }).fail(function () {
                 alert("Gagal memuat detail proyek. Silakan coba lagi.");
+            });
+        });
+
+        $("#proyekTable").on("click", ".hapus-btn", function () {
+            const viewid = $(this).data("id");
+
+            // Konfirmasi sebelum menghapus
+            Swal.fire({
+                title: 'Apakah Anda yakin?',
+                text: "Data proyek akan dihapus secara permanen!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, hapus!',
+                cancelButtonText: 'Batal',
+                customClass: {
+                    confirmButton: 'btn btn-danger',
+                    cancelButton: 'btn btn-secondary'
+                },
+                buttonsStyling: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Kirim permintaan DELETE ke server
+                    $.ajax({
+                        url: `/api/proyek_delete/${viewid}`,
+                        type: 'DELETE',
+
+                        success: function (response) {
+
+                            Swal.fire({
+                                title: 'Berhasil!',
+                                text: response.message,
+                                icon: 'success',
+                                customClass: {
+                                    confirmButton: 'btn btn-primary'
+                                },
+                                buttonsStyling: false
+                            });
+
+                            setTimeout(() => {
+                                window.location
+                                    .reload(); // Melakukan refresh halaman
+                            }, 2000); //
+
+                        },
+
+                        error: function (xhr) {
+                            Swal.fire({
+                                title: 'Oops!',
+                                text: xhr.responseJSON ?.error ||
+                                    'Terjadi kesalahan. Silakan coba lagi.',
+                                icon: 'error',
+                                customClass: {
+                                    confirmButton: 'btn btn-primary'
+                                },
+                                buttonsStyling: false
+                            });
+                        }
+                    });
+                }
             });
         });
         // ------------------------
@@ -235,14 +303,14 @@
                     type: "DELETE",
                     success: function (response) {
                         Swal.fire({
-                        title: 'Sukses',
-                        text: 'Data Berhasil Dihapus',
-                        icon: 'success',
-                        customClass: {
-                            confirmButton: 'btn btn-primary waves-effect waves-light'
-                        },
-                        buttonsStyling: false
-                    });
+                            title: 'Sukses',
+                            text: 'Data Berhasil Dihapus',
+                            icon: 'success',
+                            customClass: {
+                                confirmButton: 'btn btn-primary waves-effect waves-light'
+                            },
+                            buttonsStyling: false
+                        });
                         // Refresh modal atau hapus baris dari tabel
                         $(`#modalProjectCriteria button[data-id="${kriteriaId}"]`).closest(
                             "tr").remove();
@@ -316,7 +384,7 @@
             }).fail(function () {
                 Swal.fire({
                     title: 'Oops!',
-                    text: 'Gagal memuat data untuk diedit. Silakan coba lagi.',
+                    text: 'Gagal memuat data atau data sudah digunakan untuk transaksi.!',
                     icon: 'error',
                     customClass: {
                         confirmButton: 'btn btn-primary waves-effect waves-light'
@@ -335,8 +403,10 @@
             }
 
             // Ambil nilai periode mulai dan selesai
-            const periodeValue = $("[name='editperiode']").val(); // Ambil nilai dari input dengan name 'editperiode'
-            const [periodeMulai, periodeSelesai] = periodeValue.split(" to "); // Pisahkan menjadi dua tanggal
+            const periodeValue = $("[name='editperiode']")
+                .val(); // Ambil nilai dari input dengan name 'editperiode'
+            const [periodeMulai, periodeSelesai] = periodeValue.split(
+                " to "); // Pisahkan menjadi dua tanggal
 
             // Periksa apakah periode valid
             if (!periodeMulai || !periodeSelesai) {

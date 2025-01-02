@@ -14,7 +14,7 @@ from sqlalchemy.orm import aliased
 import pandas as pd
 import numpy as np
 from pulp import LpProblem, LpVariable, LpMinimize, LpMaximize, lpSum, PULP_CBC_CMD, LpStatus
-
+import logging
 
 main_bp = Blueprint('main', __name__, template_folder='views/templates')
 
@@ -114,6 +114,9 @@ def view_po(id):
 
 @main_bp.route('/api/proyek/<uuid:project_id>', methods=['GET'])
 def api_get_project_details(project_id):
+    transaksi_terkait = DetailPartisipasi1.query.filter_by(id_proyek=project_id).first()
+    if transaksi_terkait:
+        return {"fail": "Proyek tidak dapat diedit karena sudah ada transaksi terkait"}, 400
     return jsonify(get_project_details(project_id))
 
 # Route untuk melihat detail proyek
@@ -216,6 +219,29 @@ def delete_kriteria(kriteria_id):
         return {"message": "Kriteria berhasil dihapus"}, 200
     except Exception as e:
         return {"error": str(e)}, 500
+    
+@main_bp.route('/api/proyek_delete/<uuid:id>', methods=['DELETE'])
+def delete_proyek(id):
+    try:
+        # logging.info(f"UUID diterima: {id}")
+        proyek = Proyek.query.get(id)
+       
+        if not proyek:
+            return {"error": "Proyek not found"}, 404
+        
+        transaksi_terkait = DetailPartisipasi1.query.filter_by(id_proyek=id).first()
+        if transaksi_terkait:
+            return {"error": "Proyek tidak dapat dihapus karena sudah ada transaksi terkait"}, 400
+
+        Kriteria.query.filter_by(id_proyek=id).delete()
+        # Hapus data dari database
+        db.session.delete(proyek)
+        db.session.commit()
+        
+        return {"message": "Kriteria berhasil dihapus"}, 200
+    except Exception as e:
+        db.session.rollback()  # Rollback jika terjadi error
+        return {"error": f"Terjadi kesalahan: {str(e)}"}, 500
 
 @main_bp.route('/api/proyek_partisipasi', methods=['POST'])
 def add_partisipasi():
