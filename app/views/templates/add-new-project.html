@@ -126,10 +126,10 @@
                 body: formData
             });
             var result = await response.json();
-            if (response.ok) {
+            if (response.ok && result[1] == 200) {
                 Swal.fire({
                     title: 'Sukses!',
-                    text: result.message,
+                    html: result[0].message,
                     icon: 'success',
                     customClass: {
                         confirmButton: 'btn btn-primary waves-effect waves-light'
@@ -142,7 +142,7 @@
             } else {
                 Swal.fire({
                     title: 'Oops!',
-                    text: 'Data gagal disimpan.',
+                    html: result[0].message,
                     icon: 'error',
                     customClass: {
                         confirmButton: 'btn btn-primary waves-effect waves-light'
