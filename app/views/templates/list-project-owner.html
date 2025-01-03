@@ -160,10 +160,16 @@
 
                 $("#editProjectBtn").data("id", id);
                 $("#projectDetailModal").modal('show');
-            }).fail(function () {
+            }).fail(function (xhr) {
+                // Gunakan pesan dari backend
+                let errorMessage = 'Gagal memuat data!';
+                if (xhr.responseJSON && xhr.responseJSON.fail) {
+                    errorMessage = xhr.responseJSON.fail;
+                }
+
                 Swal.fire({
                     title: 'Oops!',
-                    text: 'Gagal memuat data atau data sudah digunakan untuk transaksi.!',
+                    text: errorMessage,
                     icon: 'error',
                     customClass: {
                         confirmButton: 'btn btn-primary waves-effect waves-light'
@@ -381,10 +387,16 @@
                 });
 
                 $("#editProjectModal").modal('show');
-            }).fail(function () {
+            }).fail(function (xhr) {
+                // Gunakan pesan dari backend
+                let errorMessage = 'Gagal memuat data!';
+                if (xhr.responseJSON && xhr.responseJSON.fail) {
+                    errorMessage = xhr.responseJSON.fail;
+                }
+
                 Swal.fire({
                     title: 'Oops!',
-                    text: 'Gagal memuat data atau data sudah digunakan untuk transaksi.!',
+                    text: errorMessage,
                     icon: 'error',
                     customClass: {
                         confirmButton: 'btn btn-primary waves-effect waves-light'

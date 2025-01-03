@@ -114,10 +114,16 @@ def view_po(id):
 
 @main_bp.route('/api/proyek/<uuid:project_id>', methods=['GET'])
 def api_get_project_details(project_id):
-    transaksi_terkait = DetailPartisipasi1.query.filter_by(id_proyek=project_id).first()
-    if transaksi_terkait:
-        return {"fail": "Proyek tidak dapat diedit karena sudah ada transaksi terkait"}, 400
-    return jsonify(get_project_details(project_id))
+    try:
+        # Cek apakah ada transaksi terkait
+        transaksi_terkait = DetailPartisipasi1.query.filter_by(id_proyek=project_id).first()
+        if transaksi_terkait:
+            return {"fail": "maaf tidak dapat dilihat/diedit karena sudah ada transaksi terkait!"}, 400
+
+        # Jika tidak ada transaksi terkait, kembalikan detail proyek
+        return jsonify(get_project_details(project_id))
+    except Exception as e:
+        return {"fail": f"Terjadi kesalahan: {str(e)}"}, 500
 
 # Route untuk melihat detail proyek
 @main_bp.route('/proyek/<uuid:id>/participate', methods=['GET'])
