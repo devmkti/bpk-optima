@@ -45,8 +45,6 @@ def tambah_proyek():
 
 @main_bp.route('/api/proyek', methods=['GET'])
 def get_project():
-    # data = request.json
-    # result = get_proyek(data)
     result = get_proyek()
     return jsonify(result)
 
@@ -211,21 +209,21 @@ def update_kriteria(kriteria_id):
     except Exception as e:
         return jsonify({"message": f"Terjadi kesalahan: {str(e)}"}), 500
 
-@main_bp.route('/api/kriteria_delete/<uuid:kriteria_id>', methods=['DELETE'])
-def delete_kriteria(kriteria_id):
+@main_bp.route('/api/kriteria_delete/<uuid:id>', methods=['DELETE'])
+def delete_kriteria(id):
     try:
-
-        kriteria = Kriteria.query.get(kriteria_id)
-        
-        if not kriteria:
-            return {"error": "Kriteria not found"}, 404
-        
-        # Hapus data dari database
-        db.session.delete(kriteria)
-        db.session.commit()
-        
-        return {"message": "Kriteria berhasil dihapus"}, 200
+        kriteria = Kriteria.query.filter_by(id=id).first()
+        if kriteria:
+            # Hapus data dari database
+            Kriteria.query.filter_by(id=id).delete()
+            db.session.commit()
+            return {"message": "Kriteria berhasil dihapus"}, 200
+        else:
+            db.session.rollback()
+            return {"error": "Kriteria tidak ditemukan"}, 404
     except Exception as e:
+        db.session.rollback()
+        db.session.remove()
         return {"error": str(e)}, 500
     
 @main_bp.route('/api/proyek_delete/<uuid:id>', methods=['DELETE'])
@@ -249,6 +247,7 @@ def delete_proyek(id):
         return {"message": "Kriteria berhasil dihapus"}, 200
     except Exception as e:
         db.session.rollback()  # Rollback jika terjadi error
+        db.session.remove()
         return {"error": f"Terjadi kesalahan: {str(e)}"}, 500
 
 @main_bp.route('/api/proyek_partisipasi', methods=['POST'])
@@ -306,6 +305,7 @@ def add_partisipasi():
         return jsonify({"message": "Data berhasil disimpan!"}), 200
     except Exception as e:
         db.session.rollback()
+        db.session.remove()
         print(f"Error: {str(e)}")  # Debugging log
         return jsonify({"message": f"Error: {str(e)}"}), 500
 

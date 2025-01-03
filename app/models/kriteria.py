@@ -10,7 +10,7 @@ class Kriteria(db.Model):
     nama_kriteria = db.Column(db.String(255), nullable=False)
     deskripsi = db.Column(db.String(255), nullable=False)
 
-    proyek = db.relationship('Proyek', backref=db.backref('details', lazy=True))
+    # proyek = db.relationship('Proyek', backref=db.backref('details', lazy=True))
 
     # def __repr__(self):
     #     # return f'<Proyek {self.nama_kriteria}>'
