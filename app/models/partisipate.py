@@ -22,7 +22,7 @@ class DetailPartisipasi1(db.Model):
 class DetailPartisipasi2(db.Model):
     __tablename__ = 'detail_partisipasi2'
     id = db.Column(db.String, primary_key=True)
-    id_proyek = db.Column(UUID(as_uuid=True), db.ForeignKey('proyek.id'), nullable=False)
+    # id_proyek = db.Column(UUID(as_uuid=True), db.ForeignKey('proyek.id'), nullable=False)
     
     nip = db.Column(db.String(50), primary_key=True, nullable=False)
     id_kriteria = db.Column(UUID(as_uuid=True), db.ForeignKey('kriteria.id'), primary_key=True, nullable=False)

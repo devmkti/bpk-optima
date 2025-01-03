@@ -214,7 +214,9 @@ def update_kriteria(kriteria_id):
 @main_bp.route('/api/kriteria_delete/<uuid:kriteria_id>', methods=['DELETE'])
 def delete_kriteria(kriteria_id):
     try:
+
         kriteria = Kriteria.query.get(kriteria_id)
+        
         if not kriteria:
             return {"error": "Kriteria not found"}, 404
         

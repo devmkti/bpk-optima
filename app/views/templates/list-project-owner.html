@@ -302,7 +302,7 @@
 
         $("#modalProjectCriteria").on("click", ".delete-btn", function () {
             const kriteriaId = $(this).data("id");
-
+            
             if (confirm("Apakah Anda yakin ingin menghapus kriteria ini?")) {
                 $.ajax({
                     url: `/api/kriteria_delete/${kriteriaId}`,
