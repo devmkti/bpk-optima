@@ -49,3 +49,14 @@ def get_namapegawai(nip):
 def get_namakriteria(id):   
     nmkrit = db.session.query(Kriteria.nama_kriteria).filter_by(id = id).all()
     return f"{nmkrit[0][0]}"
+
+# def generate_random_string(*, nchars = 7, min_nupper = 3, ndigits = 3, nspecial = 3, special=string.punctuation):
+#     letters = random.choices(string.ascii_lowercase, k=nchars)
+#     letters_upper = random.choices(string.ascii_uppercase, k=min_nupper)
+#     digits = random.choices(string.digits, k=ndigits)
+#     specials = random.choices(special, k=nspecial)
+
+#     random_string = letters + letters_upper + digits + specials
+#     random.shuffle(random_string)
+
+#     return ''.join(random_string)
