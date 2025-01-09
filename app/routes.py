@@ -44,7 +44,7 @@ def check_session():
     
     # Jika user mengakses halaman lain dan session tidak ada
     # if request.endpoint not in allowed_routes and 'user_id' not in session:
-    if request.endpoint not in allowed_routes and session.get('user_id') == None and session.get('logged_in') == False:
+    if request.endpoint not in allowed_routes and session.get('user_id') == None:
         return login()
 
 # URL untuk authorization
@@ -90,20 +90,13 @@ def callback():
 
         with urllib.request.urlopen(req) as response:
             token_json = json.loads(response.read())
-
-    except urllib.error.HTTPError as e:
-        return f"Error during token request: {str(e)}", 500
-    except ValueError:
-        return "Failed to parse token response", 500
-
-    access_token_sso = token_json.get('access_token')
-    print('access_token: ', access_token_sso)
-    if not access_token_sso:
-        return "Access token not found in the response", 500
-
-    # Mendapatkan informasi pengguna dari SSO
-    userinfo_url = f"{base_url}/userinfo"
-    try:
+        
+        access_token_sso = token_json.get('access_token')
+        print('access_token: ', access_token_sso)
+        if not access_token_sso:
+            return "Access token not found in the response", 500
+        
+        userinfo_url = f"{base_url}/userinfo"
         userinfo_req = urllib.request.Request(userinfo_url)
         userinfo_req.add_header('Authorization', f'Bearer {access_token_sso}')
         userinfo_req.add_header('Content-Type', 'application/x-www-form-urlencoded')
@@ -113,75 +106,23 @@ def callback():
         
         with urllib.request.urlopen(userinfo_req) as response:
             user_info = json.loads(response.read())
+
+        session['user_id'] = user_info.get("employee_id")
+        session['logged_in'] = True
+        print('session user id: ', session.get('user_id'))
+        print('session logged id: ', session.get('logged_in'))
+
+        return render_template("home.html")
+
     except urllib.error.HTTPError as e:
-        return f"Error during user info request: {str(e)}", 500
-    
-    # Buat access token dan refresh token
-    jwt_payload = {
-        "user_id": user_info.get("employee_id"),
-        "roles": user_info.get("roles", ["user"]),
-        "name": user_info.get("display_name"),
-        "email": user_info.get("email"),
-        "client_name": user_info.get("client_name"),
-        "state": user_info.get("state"),
-        "company_code": user_info.get("company_code"),
-        "upn": user_info.get("upn"),
-        "primary_sid": user_info.get("PrimarySid"),
-        "nip": user_info["info"].get("NIP"),
-        "nip_baru": user_info["info"].get("NIPBaru"),
-        "nama_pegawai": user_info["info"].get("NamaPegawai"),
-        "kode_unit_kerja": user_info["info"].get("KodeUnitKerja"),
-        "nama_unit_kerja": user_info["info"].get("NamaUnitKerja"),
-        "kode_eselon": user_info["info"].get("KodeEselon"),
-        "nama_eselon": user_info["info"].get("NamaEselon"),
-        "kode_unit_kerja_asli": user_info["info"].get("KodeUnitKerjaAsli"),
-        "nama_unit_kerja_asli": user_info["info"].get("NamaUnitKerjaAsli"),
-        "kode_eselon_asli": user_info["info"].get("KodeEselonAsli"),
-        "nama_eselon_asli": user_info["info"].get("NamaEselonAsli"),
-        "nama_jabatan": user_info["info"].get("NamaJabatan"),
-        "nama_lengkap": user_info["info"].get("NamaLengkap"),
-        "nomor_handphone": user_info["info"].get("NomorHandphone"),
-        "nomor_handphone2": user_info["info"].get("NomorHandphone2"),
-        "nik": user_info["info"].get("NIK"),
-        "jenis_kelamin": user_info["info"].get("JenisKelamin"),
-        "is_aktif": user_info["info"].get("isAktif"),
-        "keterangan": user_info["info"].get("Keterangan"),
-        "jenis_jabatan_cur": user_info["info"].get("JnsJabatanCur")
-    }
+        return f"Error during token request: {str(e)}", 500
+    except ValueError:
+        return "Failed to parse token response", 500
 
-    session['user_id'] = user_info.get("employee_id")
-    session['logged_in'] = True
-    print('session user id: ', session.get('user_id'))
-    print('session logged id: ', session.get('logged_in'))
-
-    # access_token = create_jwt(jwt_payload)
-    # refresh_token = create_jwt({"user_id": user_info.get("employee_id")}, 
-    #                             exp_minutes=int(os.environ.get("JWT_REFRESH_EXPIRATION_MINUTES")))    
-
-    return render_template("home.html")
-    # return jsonify({
-    #     "message": "Login successful",
-    #     # "access_token": access_token,   
-    #     # "refresh_token": refresh_token,
-    #     "access_token_sso": access_token_sso,
-    #     "code_sso": code,
-    #     "id_token": token_json.get('id_token'),
-    #     "jwt_payload": jwt_payload
-    # })
-    
-    # session['access_token_sso'] = access_token_sso
-    # session['access_token'] = access_token
-    # session['refresh_token'] = refresh_token
-    # session['id_token'] = token_json.get('id_token')
-    
-    # frontend_url = os.environ.get('FRONTEND_HOST_URL', 'http://localhost:5173')
-    # return redirect(
-    #     f"{frontend_url}/#/auth/callback?"
-    #     f"access_token={access_token}&"
-    #     f"access_token_sso={access_token_sso}&"
-    #     f"refresh_token={refresh_token}&"
-    #     f"session_id={session.sid}"  # Tambahkan session ID ke query parameter
-    # )
+@main_bp.route('/logout')
+def logout():    
+    session.clear()
+    return login()
 
 @main_bp.route("/")
 def index():
