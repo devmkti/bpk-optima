@@ -39,8 +39,12 @@ base_url_login = os.environ.get('BASE_URL')
 def check_session():
     # Daftar endpoint yang tidak membutuhkan validasi session
     allowed_routes = ['login']
+    print('session_user_id: ', session.get('user_id') )
+    print('session_logged_id: ', session.get('logged_in') )
+    
     # Jika user mengakses halaman lain dan session tidak ada
-    if request.endpoint not in allowed_routes and 'user_id' not in session:
+    # if request.endpoint not in allowed_routes and 'user_id' not in session:
+    if request.endpoint not in allowed_routes and session.get('user_id') == None and session.get('logged_in') == False:
         return login()
 
 # URL untuk authorization
@@ -62,6 +66,8 @@ def login():
 def callback():
     # return 'callback'
     code = request.args.get('code')
+    # return code
+    print('code: ', code)
     
     if not code:
         return "Authorization code not found", 400
@@ -91,6 +97,7 @@ def callback():
         return "Failed to parse token response", 500
 
     access_token_sso = token_json.get('access_token')
+    print('access_token: ', access_token_sso)
     if not access_token_sso:
         return "Access token not found in the response", 500
 
@@ -143,6 +150,9 @@ def callback():
     }
 
     session['user_id'] = user_info.get("employee_id")
+    session['logged_in'] = True
+    print('session user id: ', session.get('user_id'))
+    print('session logged id: ', session.get('logged_in'))
 
     # access_token = create_jwt(jwt_payload)
     # refresh_token = create_jwt({"user_id": user_info.get("employee_id")}, 
