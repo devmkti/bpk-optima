@@ -21,7 +21,8 @@ import logging
 import os
 import urllib.parse
 import urllib.request
-
+from functools import wraps
+from flask import session, redirect, url_for
 main_bp = Blueprint('main', __name__, template_folder='views/templates')
 
 # Konfigurasi
@@ -34,18 +35,12 @@ scope = os.environ.get('IDPRO_SCOPE')
 state = 'string_generate_random_string'
 base_url_login = os.environ.get('BASE_URL')
 
-# Middleware untuk validasi session
 @main_bp.before_request
-def check_session():
-    # Daftar endpoint yang tidak membutuhkan validasi session
-    allowed_routes = ['login']
-    print('session_user_id: ', session.get('user_id') )
-    print('session_logged_id: ', session.get('logged_in') )
-    
-    # Jika user mengakses halaman lain dan session tidak ada
-    # if request.endpoint not in allowed_routes and 'user_id' not in session:
-    if request.endpoint not in allowed_routes and session.get('user_id') == None:
-        return login()
+def login_required():
+    allowed_routes = ['main.login', 'main.callback'] 
+    if request.endpoint not in allowed_routes and 'user_id' not in session:
+        return redirect(url_for('main.login')) 
+
 
 # URL untuk authorization
 @main_bp.route('/login')
@@ -55,9 +50,9 @@ def login():
     query_params = {
         'client_id': client_id,
         'redirect_uri': redirect_uri,
-        'response_type': 'code',
         'scope': scope,
-        'state': state
+        'state': state,
+        'response_type': 'code',
     }
     auth_url_with_params = f"{auth_url}?{urllib.parse.urlencode(query_params)}"
     return redirect(auth_url_with_params)
@@ -92,7 +87,7 @@ def callback():
             token_json = json.loads(response.read())
         
         access_token_sso = token_json.get('access_token')
-        print('access_token: ', access_token_sso)
+       # print('access_token: ', access_token_sso)
         if not access_token_sso:
             return "Access token not found in the response", 500
         
@@ -112,12 +107,14 @@ def callback():
         print('session user id: ', session.get('user_id'))
         print('session logged id: ', session.get('logged_in'))
 
-        return render_template("home.html")
+        return redirect(url_for('main.home'))  # Gunakan nama blueprint di endpoint
 
     except urllib.error.HTTPError as e:
-        return f"Error during token request: {str(e)}", 500
+        # return f"Error during token request: {str(e)}", 500
+        print("yyyyy")
     except ValueError:
-        return "Failed to parse token response", 500
+        print("=============================")
+        # return "Failed to parse token response", 500
 
 @main_bp.route('/logout')
 def logout():    
