@@ -103,11 +103,17 @@ def callback():
             user_info = json.loads(response.read())
 
         session['user_id'] = user_info.get("employee_id")
+        session['nama_pegawai']=user_info.get("display_name")
         session['logged_in'] = True
-        print('session user id: ', session.get('user_id'))
-        print('session logged id: ', session.get('logged_in'))
+        
+        # print('session user id: ', session.get('user_id'))
+        # print('session logged id: ', session.get('logged_in'))
 
         return redirect(url_for('main.home'))  # Gunakan nama blueprint di endpoint
+    #     return jsonify({
+    #     "message": "Login successful",
+    #     "id_token": user_info,
+    # })
 
     except urllib.error.HTTPError as e:
         # return f"Error during token request: {str(e)}", 500
@@ -119,7 +125,7 @@ def callback():
 @main_bp.route('/logout')
 def logout():    
     session.clear()
-    return login()
+    #return login()
 
 @main_bp.route("/")
 def index():

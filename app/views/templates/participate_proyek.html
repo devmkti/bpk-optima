@@ -162,7 +162,7 @@
         event.preventDefault();
 
         // Ambil NIP user
-        const nip = "123";
+        const nip = "{{session['user_id']}}";
 
         const bestToOthers = document.querySelector("#boDropdown").value;
         const othersToWorst = document.querySelector("#owDropdown").value;
@@ -179,7 +179,7 @@
                 isBoValid = false;
             } else {
                 boData.push({
-                    nip: "1234",
+                    nip: "{{session['user_id']}}",
                     id_kriteria: idKriteria,
                     opsi: "bo",
                     skor: parseInt(skor),
@@ -201,7 +201,7 @@
                 isWoValid = false;
             } else {
                 woData.push({
-                    nip: "1234",
+                    nip: "{{session['user_id']}}",
                     id_kriteria: idKriteria,
                     opsi: "ow",
                     skor: parseInt(skor),
