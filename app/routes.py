@@ -458,7 +458,7 @@ def calculate(id,nip):
         .join(subquery, subquery.c.kriteria_id == DetailPartisipasi2.id_kriteria)
         .join(DetailPartisipasi1, DetailPartisipasi2.nip == DetailPartisipasi1.nip)
         #.filter(DetailPartisipasi2.nip == nip )
-        .filter(DetailPartisipasi2.nip == nip, DetailPartisipasi1.nip == nip, subquery.c.proyek_id==DetailPartisipasi1.id_proyek)
+        .filter(DetailPartisipasi2.nip == nip, subquery.c.proyek_id==DetailPartisipasi1.id_proyek)
         .all()
     )
 
