@@ -451,12 +451,14 @@ def calculate(id,nip):
             subquery.c.kriteria_id,
             DetailPartisipasi1.best_to_others,
             DetailPartisipasi1.others_to_worst,
-            DetailPartisipasi2.opsi
+            DetailPartisipasi2.opsi,
+            subquery.c.proyek_id,   
                 
         )
         .join(subquery, subquery.c.kriteria_id == DetailPartisipasi2.id_kriteria)
         .join(DetailPartisipasi1, DetailPartisipasi2.nip == DetailPartisipasi1.nip)
-        .filter(DetailPartisipasi2.nip == nip)
+        #.filter(DetailPartisipasi2.nip == nip )
+        .filter(DetailPartisipasi2.nip == nip, DetailPartisipasi1.nip == nip, subquery.c.proyek_id==DetailPartisipasi1.id_proyek)
         .all()
     )
 
