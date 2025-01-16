@@ -64,6 +64,13 @@
             <hr class="my-4 mx-n4">
             <h6>3. Penilaian Kriteria oleh User</h6>
             <div class="accordion" id="collapsibleSection">
+                <div class="card-body">
+                    <div class="row">
+                        
+                        
+                    </div>
+    
+                </div>
                 <div class="card accordion-item">
                     <h2 class="accordion-header" id="headingBO">
                         <button class="accordion-button" type="button" data-bs-toggle="collapse"
@@ -74,7 +81,17 @@
                     <div id="collapseBO" class="accordion-collapse collapse show" data-bs-parent="#collapsibleSection1">
                         <div class="accordion-body">
                             <!-- Dropdown untuk Best to Others -->
-
+                            <div class="col-md-12">
+                                <div class="mb-3">
+                                    <label class="form-label">Pilih Kriteria Best (Terbaik)</label>
+                                    <select class="form-control" name="selected_bo" id="boDropdown">
+                                        <option value="" disabled selected>Pilih Kriteria</option>
+                                        {% for kriteria in kriterias %}
+                                        <option value="{{ kriteria.id_kriteria }}">{{ kriteria.nama_kriteria }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
 
                             <div class="row g-3">
                                 {% for kriteria in kriterias %}
@@ -85,7 +102,7 @@
                                 </div>
                                 <div class="col-md-1">
                                     <label class="form-label">Nilai</label>
-                                    <input type="number" class="form-control" name="bo_nilai[]" placeholder="1-9"
+                                    <input type="number" class="form-control bo-nilai" name="bo_nilai[]"  placeholder="1-9"
                                         data-id_kriteria="{{ kriteria.id_kriteria }}">
                                 </div>
                                 {% endfor %}
@@ -103,7 +120,17 @@
                     </h2>
                     <div id="collapseOW" class="accordion-collapse collapse show" data-bs-parent="#collapsibleSection2">
                         <div class="accordion-body">
-
+                            <div class="col-md-12">
+                                <div class="mb-3">
+                                    <label class="form-label">Pilih Kriteria Worst (Terburuk)</label>
+                                    <select class="form-control" name="selected_ow" id="owDropdown">
+                                        <option value="" disabled selected>Pilih Kriteria</option>
+                                        {% for kriteria in kriterias %}
+                                        <option value="{{ kriteria.id_kriteria }}">{{ kriteria.nama_kriteria }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
                             <div class="row g-3">
                                 {% for kriteria in kriterias %}
                                 <div class="col-md-11">
@@ -113,7 +140,7 @@
                                 </div>
                                 <div class="col-md-1">
                                     <label class="form-label">Nilai</label>
-                                    <input type="number" class="form-control" name="bo_nilai[]" placeholder="1-9"
+                                    <input type="number" class="form-control ow-nilai" name="bo_nilai[]"  placeholder="1-9"
                                         data-id_kriteria="{{ kriteria.id_kriteria}}">
                                 </div>
                                 {% endfor %}
@@ -122,33 +149,7 @@
                     </div>
                 </div>
             </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="mb-3">
-                            <label class="form-label">Pilih Kriteria Best (Terbaik)</label>
-                            <select class="form-control" name="selected_bo" id="boDropdown">
-                                <option value="" disabled selected>Pilih Kriteria</option>
-                                {% for kriteria in kriterias %}
-                                <option value="{{ kriteria.id_kriteria }}">{{ kriteria.nama_kriteria }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-md-12">
-                        <div class="mb-3">
-                            <label class="form-label">Pilih Kriteria Worst (Terburuk)</label>
-                            <select class="form-control" name="selected_ow" id="owDropdown">
-                                <option value="" disabled selected>Pilih Kriteria</option>
-                                {% for kriteria in kriterias %}
-                                <option value="{{ kriteria.id_kriteria }}">{{ kriteria.nama_kriteria }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
+            
             <div class="pt-4">
                 <button type="submit" class="btn btn-primary me-sm-3">Submit</button>
                 <a href="/listOfProject" class="btn btn-secondary">Cancel</a>
@@ -165,6 +166,7 @@
         const nip = "{{session['user_id']}}";
 
         const bestToOthers = document.querySelector("#boDropdown").value;
+        debugger
         const othersToWorst = document.querySelector("#owDropdown").value;
         const idProyek = "{{ proyek.id }}";
 
@@ -256,6 +258,43 @@
                 },
                 buttonsStyling: false
             });
+        }
+    });
+
+    document.getElementById('boDropdown').addEventListener('change', function () {
+        debugger
+        // Ambil id_kriteria dari dropdown yang dipilih
+        const selectedId = this.value;
+
+        // Reset semua input bo_nilai ke kosong
+        document.querySelectorAll('.bo-nilai').forEach(input => {
+            input.value = ''; // Kosongkan nilai
+        });
+
+        // Cari input dengan data-id_kriteria yang sesuai
+        // const selectedInput = document.querySelector(.bo-nilai[data-id_kriteria="${selectedId}"]);
+        const selectedInput = document.querySelector(`.bo-nilai[data-id_kriteria="${selectedId}"]`);
+        if (selectedInput) {
+            // Berikan nilai 1 pada input yang sesuai
+            selectedInput.value = 1;
+        }
+    });
+
+    document.getElementById('owDropdown').addEventListener('change', function () {
+        // Ambil id_kriteria dari dropdown yang dipilih
+        const selectedId = this.value;
+
+        // Reset semua input bo_nilai ke kosong
+        document.querySelectorAll('.ow-nilai').forEach(input => {
+            input.value = ''; // Kosongkan nilai
+        });
+
+        // Cari input dengan data-id_kriteria yang sesuai
+        // const selectedInput = document.querySelector(.ow-nilai[data-id_kriteria="${selectedId}"]);
+        const selectedInput = document.querySelector(`.ow-nilai[data-id_kriteria="${selectedId}"]`);
+        if (selectedInput) {
+            // Berikan nilai 1 pada input yang sesuai
+            selectedInput.value = 9;
         }
     });
 </script>
