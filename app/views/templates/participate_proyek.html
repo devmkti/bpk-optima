@@ -166,7 +166,6 @@
         const nip = "{{session['user_id']}}";
 
         const bestToOthers = document.querySelector("#boDropdown").value;
-        debugger
         const othersToWorst = document.querySelector("#owDropdown").value;
         const idProyek = "{{ proyek.id }}";
 
@@ -262,7 +261,6 @@
     });
 
     document.getElementById('boDropdown').addEventListener('change', function () {
-        debugger
         // Ambil id_kriteria dari dropdown yang dipilih
         const selectedId = this.value;
 
