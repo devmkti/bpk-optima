@@ -62,7 +62,7 @@ def callback():
     # return 'callback'
     code = request.args.get('code')
     # return code
-    print('code: ', code)
+    # print('code: ', code)
     
     if not code:
         return "Authorization code not found", 400
@@ -102,6 +102,7 @@ def callback():
         with urllib.request.urlopen(userinfo_req) as response:
             user_info = json.loads(response.read())
 
+      
         session['user_id'] = user_info.get("employee_id")
         session['nama_pegawai']=user_info.get("display_name")
         session['logged_in'] = True
@@ -122,10 +123,35 @@ def callback():
         print("=============================")
         # return "Failed to parse token response", 500
 
-@main_bp.route('/logout')
-def logout():    
+def get_logout_url(base_url: str, redirect_uri: str, id_token_hint: str = None, **additional_parameters) -> str:
+    logout_url = f"{base_url}/endsession"
+    params = {
+        'post_logout_redirect_uri': redirect_uri,
+        'id_token_hint': id_token_hint
+    }
+    params.update(additional_parameters)
+
+    return f"{logout_url}?{urlencode(params)}"
+
+@main_bp.route('/logout', methods=['POST'])
+def logout():
+    print("Headers:", request.headers)
+    print("Cookies:", request.cookies)
+    print("Session Data:", session)
+    id_token = session.get('id_token')
+
+    redirect_uri = 'http://0.0.0.0:5000'
+
+    logout_url = get_logout_url(
+        base_url=base_url,
+        redirect_uri=redirect_uri,
+        id_token_hint=id_token,
+        client_id=client_id
+    )
+    
     session.clear()
-    #return login()
+
+    return jsonify({"logout_url": logout_url})
 
 @main_bp.route("/")
 def index():
