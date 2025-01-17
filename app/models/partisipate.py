@@ -43,6 +43,8 @@ class Pegawai(db.Model):
     #id = db.Column(db.String, primary_key=True)
     nip = db.Column(db.String, primary_key=True)
     nama = db.Column(db.String)
+    email = db.Column(db.String)
+    administrator = db.Column(db.String)
 
 
 

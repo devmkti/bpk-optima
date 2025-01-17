@@ -1,0 +1,159 @@
+<!-- Memanggil base template -->
+{% extends 'layout/base.html' %}
+
+<!-- Judul Halaman -->
+{% block title %}Role{% endblock %}
+
+<!-- Konten Halaman -->
+{% block content %}
+<!-- Modifikasi di sini -->
+<div class="col-lg-12">
+    <div class="card">
+        <div class="card-body">
+            <div class="container mt-4">
+                <h4 class="text-primary">Daftar Role</h4>
+                <table id="roleTable" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Nip</th>
+                            <th>Nama</th>
+                            <th style="display: none;">foto</th>
+                            <th>Administrator</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel">Edit User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editForm">
+                    <div class="mb-3">
+                        <label for="nip" class="form-label">NIP</label>
+                        <input type="text" class="form-control" id="nip" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="nama" class="form-label">Nama</label>
+                        <input type="text" class="form-control" id="nama" readonly>
+                    </div>
+                    <div class="mb-3 text-center">
+                        <img id="foto" src="" alt="Foto" class="rounded-circle"
+                            style="width: 100px; height: 100px; object-fit: cover;">
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="administrator">
+                        <label class="form-check-label" for="administrator">
+                            Administrator
+                        </label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                <button type="button" class="btn btn-primary" id="saveChanges">Simpan</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#roleTable").DataTable({
+            ajax: {
+                url: "/api/role",
+                dataSrc: "",
+            },
+            columns: [{
+                    data: "nip"
+                },
+                {
+                    data: "nama"
+                },
+                // {
+                //     data: "foto",
+                // render: function (data, type, row) {
+                //     // Tambahkan elemen gambar dengan styling CSS
+                //     return `<img src="${data}" alt="Foto" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;">`;
+                // },
+                // },
+                {
+                    data: "foto",
+                    visible: false,
+                },
+                {
+                    data: "administrator"
+                },
+                {
+                    data: null, // Kolom untuk tombol
+                    orderable: false, // Nonaktifkan pengurutan untuk kolom ini
+                    render: function (data, type, row) {
+                        return `
+                         <button class="btn btn-primary btn-sm view-btn" data-bs-toggle="modal" data-bs-target="#editModal" 
+                                data-nip="${row.nip}" data-nama="${row.nama}" data-foto="${row.foto}" data-administrator="${row.administrator}">
+                            Edit
+                        </button>
+                       
+                    `;
+                    },
+                },
+            ],
+        });
+    });
+
+    $(document).on("click", ".view-btn", function () {
+        // Ambil data dari atribut tombol
+        const nip = $(this).data("nip");
+        const nama = $(this).data("nama");
+        const foto = $(this).data("foto");
+        const administrator = $(this).data("administrator");
+
+        // Isi data di modal
+        $("#nip").val(nip);
+        $("#nama").val(nama);
+        $("#foto").attr("src", foto);
+        $("#administrator").prop("checked", administrator);
+    });
+
+    $("#saveChanges").on("click", function () {
+        const updatedData = {
+            nip: $("#nip").val(),
+            nama: $("#nama").val(),
+            administrator: $("#administrator").is(":checked"),
+        };
+
+        // Kirim data ke server (misalnya melalui AJAX)
+        $.ajax({
+            url: `/api/role/${updatedData.nip}`, // Sesuaikan endpoint Anda
+            type: "PUT",
+            contentType: "application/json",
+            data: JSON.stringify(updatedData),
+            success: function (response) {
+                Swal.fire({
+                    title: 'Berhasil',
+                    text: 'Role telah diperbarui.',
+                    icon: 'success',
+                    confirmButtonText: 'OK',
+                    customClass: {
+                        confirmButton: 'btn btn-primary waves-effect waves-light'
+                    }
+                });
+                $("#editModal").modal("hide");
+                $("#roleTable").DataTable().ajax.reload(); // Reload data table
+            },
+            error: function (xhr, status, error) {
+                alert("Terjadi kesalahan: " + error);
+            },
+        });
+    });
+</script>
+{% endblock %}

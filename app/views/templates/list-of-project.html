@@ -64,42 +64,59 @@
         },
       ],
     });
-    // Event listener untuk tombol View
-    $("#proyekTable").on("click", ".view-btn", function () {
-      const id = $(this).data("id");
-      // Contoh: Navigasi ke halaman detail proyek
-      window.location.href = `/proyek/${id}/view`;
-    });
-
-    // Event listener untuk tombol Participate
     $("#proyekTable").on("click", ".participate-btn", function () {
       const id = $(this).data("id");
-      // Contoh: Aksi partisipasi, bisa AJAX atau navigasi
-      // if (confirm("Are you sure to participate in this project?")) {
-
-      //   // $.get(`/proyek/${id}/participate`, function (response) {
-      //   //     alert(response.message || "Participation successful!");
-      //   //     // table.ajax.reload(); // Reload data table
-      //   //     window.location.href = `/proyek/${id}/participate`;
-      //   // }).fail(function () {
-      //   //     alert("Failed to participate. Please try again.");
-      //   // });
-      // }
-      Swal.fire({
-        title: 'Konfirmasi',
-        text: "Are you sure to participate in this project?",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Yes',
-        customClass: {
-          confirmButton: 'btn btn-primary me-3 waves-effect waves-light',
-          cancelButton: 'btn btn-label-secondary waves-effect waves-light'
-        },
-        buttonsStyling: false
-      }).then(function (result) {
-        if (result.value) {
-
-          window.location.href = `/proyek/${id}/participate`;
+      // Panggil endpoint validasi sebelum melanjutkan
+      $.get(`/api/validasi_partisipate/${id}`, function (response) {
+        // Jika validasi berhasil (proyek belum di-participate), lanjutkan
+        Swal.fire({
+          title: 'Konfirmasi',
+          text: "Are you sure to participate in this project?",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Yes',
+          customClass: {
+            confirmButton: 'btn btn-primary me-3 waves-effect waves-light',
+            cancelButton: 'btn btn-label-secondary waves-effect waves-light'
+          },
+          buttonsStyling: false
+        }).then(function (result) {
+          if (result.value) {
+            window.location.href = `/proyek/${id}/participate`;
+          }
+        });
+      }).fail(function (xhr) {
+        // Jika validasi gagal, tampilkan pesan error
+        if (xhr.status === 400) {
+          Swal.fire({
+            title: 'Gagal',
+            text: 'Proyek ini sudah dilakukan partisipasi oleh Anda sebelumnya!',
+            icon: 'info',
+            confirmButtonText: 'OK',
+            customClass: {
+              confirmButton: 'btn btn-primary waves-effect waves-light'
+            }
+          });
+        } else if (xhr.status === 404) {
+          Swal.fire({
+            title: 'Gagal',
+            text: 'Proyek tidak ditemukan.',
+            icon: 'error',
+            confirmButtonText: 'OK',
+            customClass: {
+              confirmButton: 'btn btn-primary waves-effect waves-light'
+            }
+          });
+        } else {
+          Swal.fire({
+            title: 'Gagal',
+            text: 'Terjadi kesalahan. Silakan coba lagi.',
+            icon: 'error',
+            confirmButtonText: 'OK',
+            customClass: {
+              confirmButton: 'btn btn-primary waves-effect waves-light'
+            }
+          });
         }
       });
     });

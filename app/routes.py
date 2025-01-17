@@ -62,7 +62,7 @@ def callback():
     # return 'callback'
     code = request.args.get('code')
     # return code
-    # print('code: ', code)
+    print('code: ', code)
     
     if not code:
         return "Authorization code not found", 400
@@ -102,7 +102,6 @@ def callback():
         with urllib.request.urlopen(userinfo_req) as response:
             user_info = json.loads(response.read())
 
-      
         session['user_id'] = user_info.get("employee_id")
         session['nama_pegawai']=user_info.get("display_name")
         session['logged_in'] = True
@@ -123,35 +122,10 @@ def callback():
         print("=============================")
         # return "Failed to parse token response", 500
 
-def get_logout_url(base_url: str, redirect_uri: str, id_token_hint: str = None, **additional_parameters) -> str:
-    logout_url = f"{base_url}/endsession"
-    params = {
-        'post_logout_redirect_uri': redirect_uri,
-        'id_token_hint': id_token_hint
-    }
-    params.update(additional_parameters)
-
-    return f"{logout_url}?{urlencode(params)}"
-
-@main_bp.route('/logout', methods=['POST'])
-def logout():
-    print("Headers:", request.headers)
-    print("Cookies:", request.cookies)
-    print("Session Data:", session)
-    id_token = session.get('id_token')
-
-    redirect_uri = 'http://0.0.0.0:5000'
-
-    logout_url = get_logout_url(
-        base_url=base_url,
-        redirect_uri=redirect_uri,
-        id_token_hint=id_token,
-        client_id=client_id
-    )
-    
+@main_bp.route('/logout')
+def logout():    
     session.clear()
-
-    return jsonify({"logout_url": logout_url})
+    #return login()
 
 @main_bp.route("/")
 def index():
@@ -169,6 +143,10 @@ def addNewProject():
 def listOfProject():
   return render_template("list-of-project.html")
 
+@main_bp.route("/role")
+def role():
+  return render_template("role.html")
+
 @main_bp.route("/listProjectOwner")
 def listProjectOwner():
   return render_template("list-project-owner.html")
@@ -183,6 +161,12 @@ def get_project():
     result = get_proyek()
     return jsonify(result)
 
+@main_bp.route('/api/role', methods=['GET'])
+def get_role():
+    result = get_role_user()
+    #print(result)
+    return jsonify(result)
+
 # Route untuk melihat view proyek
 @main_bp.route('/proyek/<uuid:id>/view', methods=['GET'])
 def view_proyek(id):
@@ -194,7 +178,26 @@ def view_proyek(id):
 
     return render_template('view_proyek.html', proyek=proyek, kriterias=temp)
 
-
+@main_bp.route("/api/role/<string:nip>", methods=["PUT"])
+def update_role(nip):
+    data = request.get_json()
+    
+    # Cari pegawai berdasarkan NIP
+    pegawai = Pegawai.query.filter_by(nip=nip).first()
+    if not pegawai:
+        return jsonify({"message": "Data tidak ditemukan"}), 404
+    
+    # Perbarui data pegawai
+    
+    pegawai.administrator = data.get("administrator", pegawai.administrator)
+    
+    # Simpan perubahan
+    try:
+        db.session.commit()  # Menyimpan perubahan ke database
+        return jsonify({"message": "Data berhasil diperbarui!"})
+    except Exception as e:
+        db.session.rollback()  # Jika ada kesalahan, rollback transaksi
+        return jsonify({"message": "Terjadi kesalahan", "error": str(e)}), 500
 # Route untuk melihat view proyek OWNER
 @main_bp.route('/proyek/<uuid:id>/view_po', methods=['GET'])
 def view_po(id):
@@ -380,6 +383,24 @@ def delete_proyek(id):
         db.session.commit()
         
         return {"message": "Kriteria berhasil dihapus"}, 200
+    except Exception as e:
+        db.session.rollback()  # Rollback jika terjadi error
+        db.session.remove()
+        return {"error": f"Terjadi kesalahan: {str(e)}"}, 500
+    
+@main_bp.route('/api/validasi_partisipate/<uuid:id>',)
+def validasiPartisipate(id):
+    try:
+        # logging.info(f"UUID diterima: {id}")
+        proyek = Proyek.query.get(id)
+       
+        if not proyek:
+            return {"error": "Proyek not found"}, 404
+        
+        validasi = DetailPartisipasi1.query.filter_by(id_proyek=id,nip=session['user_id']).first()
+        if validasi:
+            return {"error": "Proyek ini sudah pernah anda melakukan partisipate sebelum nya"}, 400
+        return {"message": "Proyek dapat diikuti."}, 200
     except Exception as e:
         db.session.rollback()  # Rollback jika terjadi error
         db.session.remove()

@@ -41,6 +41,22 @@ def get_proyek():
     # return jsonify(result)
     return result
 
+def get_role_user():
+    data_role = Pegawai.query.all()
+    result = [
+        {
+            'nip': p.nip,
+            'nama': p.nama,
+            'foto': f"https://sisdm.bpk.go.id/photo/{p.nip}/md.jpg", 
+            'administrator': p.administrator
+        }
+        for p in data_role
+    ]
+   # print (data_role)
+    # return jsonify(result)
+    return result
+
+
 def simpan_proyek(request):
     try:
         nama_proyek = request.form['nama_proyek']

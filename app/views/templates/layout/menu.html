@@ -71,5 +71,11 @@
         <div data-i18n="Daftar Proyek">Daftar Proyek</div>
       </a>
     </li>
+    <li class="menu-item {% if request.path == '/role' %}active{% endif %}">
+      <a href="{{ url_for('main.role') }}" class="menu-link">
+        <i class="menu-icon tf-icons ti ti-users"></i>
+        <div data-i18n="Role">Role</div>
+      </a>
+    </li>
   </ul>  
 </aside>
