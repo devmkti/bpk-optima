@@ -91,7 +91,13 @@
                     visible: false,
                 },
                 {
-                    data: "administrator"
+                    data: "administrator",
+                    render: function (data, type, row) {
+                        if (row.administrator)
+                          return '<div class="ml-5"><span class="badge bg-label-success"><strong><i class="ti ti-check"></i></strong></span></div>'
+                        else
+                          return ''
+                    },
                 },
                 {
                     data: null, // Kolom untuk tombol
