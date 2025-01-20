@@ -64,6 +64,12 @@
         },
       ],
     });
+    // Event listener untuk tombol View
+    $("#proyekTable").on("click", ".view-btn", function () {
+      const id = $(this).data("id");
+      // Contoh: Navigasi ke halaman detail proyek
+      window.location.href = `/proyek/${id}/view`;
+    });
     $("#proyekTable").on("click", ".participate-btn", function () {
       const id = $(this).data("id");
       // Panggil endpoint validasi sebelum melanjutkan
