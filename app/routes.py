@@ -573,7 +573,7 @@ def calculate(id,nip):
 
     # Pass data to the template
     return render_template('view_proyek-owner-detil2.html',
-                           proyek=proyek, kriterias=kriterias, nip=nip, nama=nama_pegawai,paired_data=paired_data,paired_databayes=paired_databayes,
+                           id=id, proyek=proyek, kriterias=kriterias, nip=nip, nama=nama_pegawai,paired_data=paired_data,paired_databayes=paired_databayes,
                            df_results=df_results.to_html(classes="table table-striped", index=True),
                            weights_descriptive_json=weights_descriptive_json,
                            weights_bayesian_json=weights_bayesian_json,
