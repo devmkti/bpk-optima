@@ -246,103 +246,6 @@ def view_po(id):
     ).join(
         Pegawai, subquery_bb.c.nip == Pegawai.nip  # Join tabel Pegawai
     ).distinct().all()
-
-    # Pengecekan data bobot setiap partisipan apakah sudah ada di tabel kriteria_skor atau belum
-    kriteria_skor = KriteriaSkor.query.filter_by(id_proyek=id).first()
-    if not kriteria_skor:
-        participates = DetailPartisipasi1.query.filter_by(id_proyek=id).all()
-        proyek = Proyek.query.get_or_404(id)
-
-        # Lakukan perulangan dan simpan bobot setiap partisipan
-        for p in participates:
-            nip = p.nip
-            print("participates nip: ", nip)
-
-            nama_pegawai=get_namapegawai(nip)
-            # Alias tabel untuk subquery
-            proyek_alias = aliased(Proyek)
-            kriteria_alias = aliased(Kriteria)
-
-            # Subquery: bagian "AA" dalam SQL
-            subquery = (
-                db.session.query(
-                    proyek_alias.nama_proyek.label("nama_proyek"),
-                    kriteria_alias.nama_kriteria.label("nama_kriteria"),
-                    proyek_alias.id.label("proyek_id"),
-                    kriteria_alias.id.label("kriteria_id")
-                )
-                .join(kriteria_alias, proyek_alias.id == kriteria_alias.id_proyek)
-                .filter(proyek_alias.id == id )
-                .subquery()  # Membuat subquery
-            )
-
-            # Query utama
-            kriterias = (
-                db.session.query(
-                    DetailPartisipasi2.nip,
-                    subquery.c.nama_kriteria,
-                    DetailPartisipasi2.opsi,
-                    DetailPartisipasi2.skor,
-                    subquery.c.kriteria_id,
-                    DetailPartisipasi1.best_to_others,
-                    DetailPartisipasi1.others_to_worst,
-                    DetailPartisipasi2.opsi,
-                    subquery.c.proyek_id,   
-                        
-                )
-                .join(subquery, subquery.c.kriteria_id == DetailPartisipasi2.id_kriteria)
-                .join(DetailPartisipasi1, DetailPartisipasi2.nip == DetailPartisipasi1.nip)
-                #.filter(DetailPartisipasi2.nip == nip )
-                .filter(DetailPartisipasi2.nip == nip, subquery.c.proyek_id==DetailPartisipasi1.id_proyek)
-                # .filter(subquery.c.proyek_id==DetailPartisipasi1.id_proyek)
-                .all()
-            )
-
-            # Array untuk data kriteria
-            kriter = []
-            nm_kriter = []
-            n_BO = []
-            n_OW = []
-            for field in kriterias:
-                if field[7] == 'bo':
-                    kriter.append(str(field[4]))
-                    nm_kriter.append(str(field[1]))
-                    best_criterion = str(field[5])
-                    worst_criterion = str(field[6])
-                    n_BO.append(str(field[3]))
-                if field[7] == 'ow':
-                    n_OW.append(str(field[3]))
-
-            #return worst_criterion
-            criteria = kriter
-            lcriteria = nm_kriter
-            goal = 'minimize'  # Default to 'minimize'
-            best_to_others = np.array(n_BO, dtype=float)
-            others_to_worst = np.array(n_OW, dtype=float)
-            
-            n = len(criteria)
-            best_index = criteria.index(best_criterion)
-            worst_index = criteria.index(worst_criterion)
-            
-            # Solve using descriptive statistics (direct BO/OW)
-            weights_descriptive, consistency_descriptive = solve_bwm(best_to_others, others_to_worst, criteria, best_index, worst_index, goal)
-
-            # Gabungkan kedua list menjadi pasangan
-            paired_data = list(zip(criteria, weights_descriptive))
-            # print('Paired data nip ' , nip , ': ', paired_data)
-
-            for pr in paired_data:
-                print('Sub paired data nip ' , nip , ': ', pr[0])
-                # Proses data yang dikirimkan
-                ks = KriteriaSkor(
-                    id_proyek=id,
-                    nip=nip,
-                    id_kriteria=pr[0],
-                    bobot=pr[1]
-                )
-                db.session.add(ks)
-            db.session.flush()
-        db.session.commit()
     
     return render_template('view_proyek-owner.html', proyek=proyek, view_po=results)
 
@@ -556,7 +459,7 @@ def add_partisipasi():
         db.session.add(new_proyek_dropdown)
         db.session.commit()
         print("Data berhasil disimpan!")  # Debugging log
-        return jsonify({"message": "Data berhasil disimpan!"}), 200
+        return jsonify({"message": "Data berhasil disimpan!","success":True}), 200
     except Exception as e:
         db.session.rollback()
         db.session.remove()
@@ -722,3 +625,116 @@ def solve_bwm(best_to_others, others_to_worst, criteria, best_index, worst_index
         return weights_values, consistency_ratio
     else:
         return None, None
+
+@main_bp.route('/api/proyek_partisipasi_bobot', methods=['POST'])
+def store_weight_participate():
+    try:
+        data = request.get_json()
+        id = data.get('id_proyek')
+        
+        if not data:
+            return jsonify({"message": "Tidak ada data yang dikirim."}), 400
+
+        # Pengecekan data bobot setiap partisipan apakah sudah ada di tabel kriteria_skor atau belum
+        kriteria_skor = KriteriaSkor.query.filter_by(id_proyek=id).first()
+        if not kriteria_skor:
+            participates = DetailPartisipasi1.query.filter_by(id_proyek=id).all()
+            proyek = Proyek.query.get_or_404(id)
+
+            # Lakukan perulangan dan simpan bobot setiap partisipan
+            for p in participates:
+                nip = p.nip
+                print("participates nip: ", nip)
+
+                nama_pegawai=get_namapegawai(nip)
+                # Alias tabel untuk subquery
+                proyek_alias = aliased(Proyek)
+                kriteria_alias = aliased(Kriteria)
+
+                # Subquery: bagian "AA" dalam SQL
+                subquery = (
+                    db.session.query(
+                        proyek_alias.nama_proyek.label("nama_proyek"),
+                        kriteria_alias.nama_kriteria.label("nama_kriteria"),
+                        proyek_alias.id.label("proyek_id"),
+                        kriteria_alias.id.label("kriteria_id")
+                    )
+                    .join(kriteria_alias, proyek_alias.id == kriteria_alias.id_proyek)
+                    .filter(proyek_alias.id == id )
+                    .subquery()  # Membuat subquery
+                )
+
+                # Query utama
+                kriterias = (
+                    db.session.query(
+                        DetailPartisipasi2.nip,
+                        subquery.c.nama_kriteria,
+                        DetailPartisipasi2.opsi,
+                        DetailPartisipasi2.skor,
+                        subquery.c.kriteria_id,
+                        DetailPartisipasi1.best_to_others,
+                        DetailPartisipasi1.others_to_worst,
+                        DetailPartisipasi2.opsi,
+                        subquery.c.proyek_id,   
+                            
+                    )
+                    .join(subquery, subquery.c.kriteria_id == DetailPartisipasi2.id_kriteria)
+                    .join(DetailPartisipasi1, DetailPartisipasi2.nip == DetailPartisipasi1.nip)
+                    #.filter(DetailPartisipasi2.nip == nip )
+                    .filter(DetailPartisipasi2.nip == nip, subquery.c.proyek_id==DetailPartisipasi1.id_proyek)
+                    # .filter(subquery.c.proyek_id==DetailPartisipasi1.id_proyek)
+                    .all()
+                )
+
+                # Array untuk data kriteria
+                kriter = []
+                nm_kriter = []
+                n_BO = []
+                n_OW = []
+                for field in kriterias:
+                    if field[7] == 'bo':
+                        kriter.append(str(field[4]))
+                        nm_kriter.append(str(field[1]))
+                        best_criterion = str(field[5])
+                        worst_criterion = str(field[6])
+                        n_BO.append(str(field[3]))
+                    if field[7] == 'ow':
+                        n_OW.append(str(field[3]))
+
+                #return worst_criterion
+                criteria = kriter
+                lcriteria = nm_kriter
+                goal = 'minimize'  # Default to 'minimize'
+                best_to_others = np.array(n_BO, dtype=float)
+                others_to_worst = np.array(n_OW, dtype=float)
+                
+                n = len(criteria)
+                best_index = criteria.index(best_criterion)
+                worst_index = criteria.index(worst_criterion)
+                
+                # Solve using descriptive statistics (direct BO/OW)
+                weights_descriptive, consistency_descriptive = solve_bwm(best_to_others, others_to_worst, criteria, best_index, worst_index, goal)
+
+                # Gabungkan kedua list menjadi pasangan
+                paired_data = list(zip(criteria, weights_descriptive))
+                # print('Paired data nip ' , nip , ': ', paired_data)
+
+                for pr in paired_data:
+                    print('Sub paired data nip ' , nip , ': ', pr[0])
+                    # Proses data yang dikirimkan
+                    ks = KriteriaSkor(
+                        id_proyek=id,
+                        nip=nip,
+                        id_kriteria=pr[0],
+                        bobot=pr[1]
+                    )
+                    db.session.add(ks)
+                db.session.flush()
+            db.session.commit()
+
+        return jsonify({"message": "Data berhasil disimpan!","success":True}), 200
+    except Exception as e:
+        db.session.rollback()
+        db.session.remove()
+        print(f"Error: {str(e)}")  # Debugging log
+        return jsonify({"message": f"Error: {str(e)}"}), 500

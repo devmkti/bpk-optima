@@ -221,16 +221,28 @@
                 bo: boData,
                 wo: woData
             };
-             console.log(postData)
+            
+            console.log(postData)
+
             fetch("/api/proyek_partisipasi", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(postData)
+            })
+            .then(response => response.json())
+            .then( () => {
+                const postData = {idProyek: idProyek}
+                return fetch("/api/proyek_partisipasi_bobot", {
                     method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify(postData)
-                })
-                .then(response => response.json())
-                .then(data => {
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({"id_proyek":idProyek})
+                });
+            })
+            .then(response => response.json())
+            .then( data => {
+                if (data.success) {
                     Swal.fire({
                         title: 'Sukses',
                         text: 'Data Berhasil Disimpan',
@@ -239,14 +251,16 @@
                             confirmButton: 'btn btn-primary waves-effect waves-light'
                         },
                         buttonsStyling: false
-                    }).then(() => {
-                        // Redirect ke halaman beranda setelah dialog sukses ditutup
+                    }).then((result) => {
                         window.location.href = "/listOfProject";
-                    });
-                })
-                .catch(error => {
-                    console.error("Error:", error);
-                });
+                    })
+                } else {
+                    alert("Terjadi kesalahan: " + data.message);
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
         } else {
             Swal.fire({
                 title: 'Data Belum Lengkap',
