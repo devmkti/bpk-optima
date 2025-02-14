@@ -738,3 +738,63 @@ def store_weight_participate():
         db.session.remove()
         print(f"Error: {str(e)}")  # Debugging log
         return jsonify({"message": f"Error: {str(e)}"}), 500
+
+@main_bp.route('/api/final_simulate', methods=['POST'])
+def final_simulate():
+    try:
+        data = request.get_json()
+        id = data.get('idProyek')
+        kriteria_skor = KriteriaSkor.query.filter_by(id_proyek=id).all()
+
+        # Query data nama kriteria
+        kriteria = Kriteria.query.all()  # Mengambil semua kriteria
+        kriteria_dict = {k.id: k.nama_kriteria for k in kriteria}  # Mapping id ke nama_kriteria
+
+        # Grouping data by 'nip'
+        from collections import defaultdict
+        grouped_data = defaultdict(lambda: {})
+
+        for skor in kriteria_skor:
+            grouped_data[skor.nip][skor.id_kriteria] = skor.bobot
+
+        # Convert grouped data into individual_weights array
+        unique_kriteria = sorted({skor.id_kriteria for skor in kriteria_skor})
+        individual_weights = []
+
+        for nip, kriteria_bobot in grouped_data.items():
+            row = [kriteria_bobot.get(kriteria_id, 0) for kriteria_id in unique_kriteria]
+            individual_weights.append(row)
+
+        # Convert to NumPy array
+        individual_weights = np.array(individual_weights, dtype=float)
+        print("Individual weights:\n", individual_weights)
+        
+        # Calculate group weights using geometric mean
+        group_weights = np.prod(individual_weights, axis=0) ** (1 / len(individual_weights))
+        group_weights = group_weights / np.sum(group_weights)  # Normalize
+        print("Group weights:\n", group_weights)
+
+        # Zip nama_kriteria dengan group_weights
+        kriteria_names = [kriteria_dict[k_id] for k_id in unique_kriteria]  # Ambil nama kriteria sesuai urutan id_kriteria
+        zipped_results = list(zip(kriteria_names, group_weights))
+
+        # Prepare group_weights and kriteria_names as JSON
+        group_weights_json = [float(weight) for weight in group_weights]
+        kriteria_names_json = kriteria_names
+
+        print("Zipped results (nama_kriteria dan group_weights):\n", zipped_results)
+
+        return jsonify({
+            "message": "Data simulasi berhasil disimpan!",
+            "success":True,
+            "data": [{"nama_kriteria": name, "bobot": weight} for name, weight in zipped_results],
+            "group_weights_json": group_weights_json,
+            "kriteria_names_json": kriteria_names_json
+        }), 200
+        # store the final results
+    except Exception as e:
+        db.session.rollback()
+        db.session.remove()
+        print(f"Error: {str(e)}") #Debugging log
+        return jsonify({"message": f"Error: {str(e)}"}), 500
+    # end try

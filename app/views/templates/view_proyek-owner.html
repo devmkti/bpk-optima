@@ -12,6 +12,7 @@
       <div class="row g-3">
         <div class="col-md-6">
           <label class="form-label" for="multicol-username">Nama Proyek</label>
+          <input type="hidden" id="id-proyek" class="form-control" value="{{proyek.id}}"/>
           <input type="text" id="multicol-username" class="form-control" value="{{proyek.nama_proyek}}" disabled/>
         </div>
         <div class="col-md-6">
@@ -96,9 +97,36 @@
           <div id="collapseResult" class="accordion-collapse collapse show" data-bs-parent="#collapsibleSection">
             <div class="accordion-body">
               <!-- <div class="md-6"> -->
+              <div class="row mb-4">
+                <div class="col-xl-12 col-12 mb-6">
+                  <div class="card">
+                    <div class="card-body center">
+                      <!-- <table style="margin-left: 12px; width: fit-content" class="table table-bordered"> -->
+                      <table style="margin-left: 12px;" class="table table-bordered" id="table-kriteria-bobot">
+                        <thead>
+                          <tr>
+                            <th><b>Kriteria</b></th>
+                            <th><b>Bobot</b></th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <!-- {% for nm_krit, bobot in paired_data %} -->
+                          <!-- Menampilkan data dalam tabel mendatar -->
+                          <!-- <tr>
+                            <td>{{ nm_krit }}</td>
+                            <td>{{ bobot }}</td>
+                          </tr>
+                          {% endfor %} -->
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               <div class="row">
                 <!-- Bar Charts -->
-                <div class="col-xl-6 col-12 mb-4">
+                <!-- <div class="col-xl-6 col-12 mb-4">
                   <div class="card">
                     <div class="card-header header-elements">
                       <h5 class="card-title mb-0">Statistik Deskriptif</h5>
@@ -137,42 +165,14 @@
                       <canvas id="barChart" class="chartjs" data-height="400"></canvas>
                     </div>
                   </div>
-                </div>
+                </div> -->
                 <!-- /Bar Charts -->
 
-                <div class="col-xl-6 col-12 mb-4">
+                <div class="col-xl-12 col-12 mb-4">
                   <div class="card">
                     <div class="card-header header-elements">
                       <h5 class="card-title mb-0">Statistik Bayessian</h5>
                       <div class="card-action-element ms-auto py-0">
-                        <div class="dropdown">
-                          <button type="button" class="btn dropdown-toggle px-0" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="ti ti-calendar"></i>
-                          </button>
-                          <ul class="dropdown-menu dropdown-menu-end">
-                            <li>
-                              <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Today</a>
-                            </li>
-                            <li>
-                              <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Yesterday</a>
-                            </li>
-                            <li>
-                              <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Last 7 Days</a>
-                            </li>
-                            <li>
-                              <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Last 30 Days</a>
-                            </li>
-                            <li>
-                              <hr class="dropdown-divider" />
-                            </li>
-                            <li>
-                              <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Current Month</a>
-                            </li>
-                            <li>
-                              <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Last Month</a>
-                            </li>
-                          </ul>
-                        </div>
                       </div>
                     </div>
                     <div class="card-body">
@@ -194,6 +194,7 @@
 </div>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
   $(document).ready(function () {
     // Inisialisasi DataTable
@@ -235,16 +236,111 @@
     });
     // ------------------------
     // Event listener untuk tombol View
-    $("#daftarpegawai").on("click", ".simulate-btn", function () {
-      const [nip, viewid] = $(this).data("id").split("&");
-      // Ambil data proyek berdasarkan ID
-      $.get(`/proyek/calculate/${viewid}/${nip}`, function (data) {
-        window.location.href = `/proyek/${viewid}/view_pod/${nip}`;
-      }).fail(function () {
-        alert("Gagal memuat detail proyek. Silakan coba lagi.");
+    // $("#daftarpegawai").on("click", ".simulate-btn", function () {
+    //   const [nip, viewid] = $(this).data("id").split("&");
+    //   // Ambil data proyek berdasarkan ID
+    //   $.get(`/proyek/calculate/${viewid}/${nip}`, function (data) {
+    //     window.location.href = `/proyek/${viewid}/view_pod/${nip}`;
+    //   }).fail(function () {
+    //     alert("Gagal memuat detail proyek. Silakan coba lagi.");
+    //   });
+    // });
+    // ------------------------
+
+    document.querySelector(".simulate-btn").addEventListener("click", function (event) {
+      event.preventDefault();
+      idProyek = document.getElementById("id-proyek").value
+
+      fetch("/api/final_simulate", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({idProyek: idProyek})
+      })
+      .then(response => response.json())
+      .then( data => {
+        if (data.success) {
+          const groupWeights = data.group_weights_json;
+          const kriteriaNames = data.kriteria_names_json;
+          // Misalkan data.data adalah hasil JSON dari API
+          for (let i = 0; i < data.data.length; i++) {
+            const element = data.data[i]; // Akses setiap objek {nama_kriteria, bobot}
+            const namaKriteria = element.nama_kriteria;
+            const bobot = element.bobot;
+
+            const row = document.createElement('tr');
+            
+            const namaKriteriaCell = document.createElement('td');
+            namaKriteriaCell.textContent = namaKriteria; // Masukkan teks nama_kriteria
+            row.appendChild(namaKriteriaCell);
+
+            const bobotCell = document.createElement('td');
+            bobotCell.textContent = bobot.toFixed(6); // Format bobot dengan 6 angka di belakang koma
+            row.appendChild(bobotCell);
+
+            // Append baris baru ke tabel dengan id "table-kriteria-bobot"
+            const tbody = document.querySelector("#table-kriteria-bobot tbody");
+            if (tbody) {
+              tbody.appendChild(row);
+            }
+          }
+          
+          const ctxBayesian = document.getElementById('barChartBayesian').getContext('2d');
+          const descriptiveChart = new Chart(ctxBayesian, {
+              type: 'bar',
+              data: {
+                  labels:  kriteriaNames,
+                  datasets: [{
+                      label: 'Weights (Bayesian)',
+                      data:  groupWeights,
+                      // backgroundColor: 'rgba(60, 179, 113, 0.2)',
+                      backgroundColor: [
+                        // 'rgba(60, 179, 113, 0.2)', // Soft green
+                        'rgba(50, 205, 50, 0.2)',  // Lime green
+                        // 'rgba(34, 139, 34, 0.2)',  // Forest green
+                        // 'rgba(46, 139, 87, 0.2)',  // Sea green
+                        // 'rgba(144, 238, 144, 0.2)', // Light green
+                        // 'rgba(152, 251, 152, 0.2)'  // Pale green
+                      ],
+                      // borderColor: 'rgba(60, 179, 113, 1)',   // Soft green
+                      borderColor: [
+                        // 'rgba(60, 179, 113, 1)',   // Soft green
+                        'rgba(50, 205, 50, 1)',    // Lime green
+                        // 'rgba(34, 139, 34, 1)',    // Forest green
+                        // 'rgba(46, 139, 87, 1)',    // Sea green
+                        // 'rgba(144, 238, 144, 1)',  // Light green
+                        // 'rgba(152, 251, 152, 1)'   // Pale green
+                      ],
+                      borderWidth: 1
+                  }]
+              },
+              options: {
+                  scales: {
+                      y: {
+                          beginAtZero: true
+                      }
+                  }
+              }
+          });
+
+          // Swal.fire({
+          //   title: 'Sukses',
+          //   text: data.message,
+          //   icon: 'success',
+          //   customClass: {
+          //       confirmButton: 'btn btn-primary waves-effect waves-light'
+          //   },
+          //   buttonsStyling: false
+          // }).then((result) => {
+          //   // window.location.href = "/listOfProject";
+          // })
+        } else {
+          alert("Terjadi kesalahan: " + data.message);
+        }
+      })
+      .catch(error => {
+        console.error("Error:", error);
       });
     });
-    // ------------------------
   });
 </script>
 {% endblock %}
