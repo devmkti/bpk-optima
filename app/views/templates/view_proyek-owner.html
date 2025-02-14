@@ -44,7 +44,7 @@
     <div class="card-header">
       <div class="accordion" id="collapsibleSection">
         <!-- Card Collapsible for Kriteria yang Dinilai-->
-        <div class="card accordion-item">
+        <div class="card accordion-item active">
           <h2 class="accordion-header" id="headingKriteria">
             <button type="button" class="accordion-button" data-bs-toggle="collapse" data-bs-target="#collapseKriteria" aria-expanded="true" aria-controls="collapseKriteria">2. DAFTAR NAMA RESPONDEN</button>
           </h2>
@@ -94,7 +94,7 @@
             <button type="button" class="accordion-button" data-bs-toggle="collapse" data-bs-target="#collapseResult" aria-expanded="true" aria-controls="collapseResult">3. RESULT</button>
           </h2>
           <!-- Looping Kriteria-->
-          <div id="collapseResult" class="accordion-collapse collapse show" data-bs-parent="#collapsibleSection">
+          <div id="collapseResult" class="accordion-collapse collapse" data-bs-parent="#collapsibleSection">
             <div class="accordion-body">
               <!-- <div class="md-6"> -->
               <div class="row mb-4">
@@ -199,29 +199,6 @@
   $(document).ready(function () {
     // Inisialisasi DataTable
     $("#daftarpegawai").DataTable();
-    // $("#daftarpegawai").DataTable({
-    //   ajax: {
-    //     url: "/api/proyek",
-    //     dataSrc: "",
-    //   },
-    //   columns: [
-    //     {
-    //       data: "nip",
-    //     },
-    //     {
-    //       data: "nama_pegawai",
-    //     },
-    //     {
-    //       data: null, // Kolom untuk tombol
-    //       orderable: false, // Nonaktifkan pengurutan untuk kolom ini
-    //       render: function (data, type, row) {
-    //         return `<button class="btn btn-primary btn-sm detail-btn" data-id="${row.id}">Detail</button>
-    //                           <button class="btn btn-success btn-sm view-btn" data-id="${row.id}">View</button>
-    //                           <button class="btn btn-warning btn-sm edit-btn" data-id="${row.id}">Edit</button>`;
-    //       },
-    //     },
-    //   ],
-    // });
 
     // ------------------------
     // Event listener untuk tombol View
@@ -234,18 +211,6 @@
         alert("Gagal memuat detail proyek. Silakan coba lagi.");
       });
     });
-    // ------------------------
-    // Event listener untuk tombol View
-    // $("#daftarpegawai").on("click", ".simulate-btn", function () {
-    //   const [nip, viewid] = $(this).data("id").split("&");
-    //   // Ambil data proyek berdasarkan ID
-    //   $.get(`/proyek/calculate/${viewid}/${nip}`, function (data) {
-    //     window.location.href = `/proyek/${viewid}/view_pod/${nip}`;
-    //   }).fail(function () {
-    //     alert("Gagal memuat detail proyek. Silakan coba lagi.");
-    //   });
-    // });
-    // ------------------------
 
     document.querySelector(".simulate-btn").addEventListener("click", function (event) {
       event.preventDefault();
@@ -322,17 +287,17 @@
               }
           });
 
-          // Swal.fire({
-          //   title: 'Sukses',
-          //   text: data.message,
-          //   icon: 'success',
-          //   customClass: {
-          //       confirmButton: 'btn btn-primary waves-effect waves-light'
-          //   },
-          //   buttonsStyling: false
-          // }).then((result) => {
-          //   // window.location.href = "/listOfProject";
-          // })
+          // Tambahkan class 'active' pada elemen dengan class 'card accordion-item'
+          const accordionItem = document.querySelector('.card.accordion-item');
+          if (accordionItem) {
+              accordionItem.classList.add('active');
+          }
+
+          // Tambahkan class 'show' pada elemen dengan id 'collapseKriteria'
+          const collapseKriteria = document.getElementById('collapseResult');
+          if (collapseKriteria) {
+              collapseKriteria.classList.add('show');
+          }
         } else {
           alert("Terjadi kesalahan: " + data.message);
         }
