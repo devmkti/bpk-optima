@@ -77,6 +77,11 @@
         </div>
         <!-- end of Card Collapsible for Kriteria yang Dinilai-->
         <div class="card-footer">
+          <select name="metode" id="metode">Metode:
+            <option value="1">Geometric Mean Aggregation</option>
+            <option value="2">Distance-Based Aggregation</option>
+            <option value="3">Fuzzy BWM / Interval-Based Aggregation</option>
+          </select>
           <button class="btn btn-primary btn-md simulate-btn" data-id="1">Simulasikan</button>&nbsp;
           <button class="btn btn-danger btn-md endproject-btn" data-id="1">Akhiri Proyek</button>
         </div>
@@ -196,6 +201,61 @@
 <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
+  let descriptiveChart = null;
+  function updateChart(kriteriaNames, groupWeights) {
+      if (descriptiveChart) {
+          // 2️⃣ Update labels (jika jumlahnya berubah)
+          descriptiveChart.data.labels = kriteriaNames;
+
+          // 3️⃣ Update data dataset pertama (Index 0)
+          descriptiveChart.data.datasets[0].data = groupWeights;
+
+          // 4️⃣ Perbarui tampilan chart
+          descriptiveChart.update();
+      } else {
+          // Jika chart belum dibuat, buat chart baru
+          generateChart(kriteriaNames, groupWeights);
+      }
+  }
+  function generateChart(kriteriaNames, groupWeights) {
+    const ctxBayesian = document.getElementById('barChartBayesian').getContext('2d');
+    descriptiveChart = new Chart(ctxBayesian, {
+        type: 'bar',
+        data: {
+            labels:  kriteriaNames,
+            datasets: [{
+                label: 'Weights (Bayesian)',
+                data:  groupWeights,
+                // backgroundColor: 'rgba(60, 179, 113, 0.2)',
+                backgroundColor: [
+                  // 'rgba(60, 179, 113, 0.2)', // Soft green
+                  'rgba(50, 205, 50, 0.2)',  // Lime green
+                  // 'rgba(34, 139, 34, 0.2)',  // Forest green
+                  // 'rgba(46, 139, 87, 0.2)',  // Sea green
+                  // 'rgba(144, 238, 144, 0.2)', // Light green
+                  // 'rgba(152, 251, 152, 0.2)'  // Pale green
+                ],
+                // borderColor: 'rgba(60, 179, 113, 1)',   // Soft green
+                borderColor: [
+                  // 'rgba(60, 179, 113, 1)',   // Soft green
+                  'rgba(50, 205, 50, 1)',    // Lime green
+                  // 'rgba(34, 139, 34, 1)',    // Forest green
+                  // 'rgba(46, 139, 87, 1)',    // Sea green
+                  // 'rgba(144, 238, 144, 1)',  // Light green
+                  // 'rgba(152, 251, 152, 1)'   // Pale green
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+  }
   $(document).ready(function () {
     // Inisialisasi DataTable
     $("#daftarpegawai").DataTable();
@@ -213,13 +273,18 @@
     });
 
     document.querySelector(".simulate-btn").addEventListener("click", function (event) {
+      const tbody = document.querySelector("#table-kriteria-bobot tbody");
+      if (tbody) {
+        tbody.innerHTML = "";
+      }
       event.preventDefault();
       idProyek = document.getElementById("id-proyek").value
+      metode = document.getElementById("metode").value
 
       fetch("/api/final_simulate", {
         method: "POST",
         headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({idProyek: idProyek})
+        body: JSON.stringify({idProyek: idProyek, metode: metode})
       })
       .then(response => response.json())
       .then( data => {
@@ -248,44 +313,8 @@
               tbody.appendChild(row);
             }
           }
-          
-          const ctxBayesian = document.getElementById('barChartBayesian').getContext('2d');
-          const descriptiveChart = new Chart(ctxBayesian, {
-              type: 'bar',
-              data: {
-                  labels:  kriteriaNames,
-                  datasets: [{
-                      label: 'Weights (Bayesian)',
-                      data:  groupWeights,
-                      // backgroundColor: 'rgba(60, 179, 113, 0.2)',
-                      backgroundColor: [
-                        // 'rgba(60, 179, 113, 0.2)', // Soft green
-                        'rgba(50, 205, 50, 0.2)',  // Lime green
-                        // 'rgba(34, 139, 34, 0.2)',  // Forest green
-                        // 'rgba(46, 139, 87, 0.2)',  // Sea green
-                        // 'rgba(144, 238, 144, 0.2)', // Light green
-                        // 'rgba(152, 251, 152, 0.2)'  // Pale green
-                      ],
-                      // borderColor: 'rgba(60, 179, 113, 1)',   // Soft green
-                      borderColor: [
-                        // 'rgba(60, 179, 113, 1)',   // Soft green
-                        'rgba(50, 205, 50, 1)',    // Lime green
-                        // 'rgba(34, 139, 34, 1)',    // Forest green
-                        // 'rgba(46, 139, 87, 1)',    // Sea green
-                        // 'rgba(144, 238, 144, 1)',  // Light green
-                        // 'rgba(152, 251, 152, 1)'   // Pale green
-                      ],
-                      borderWidth: 1
-                  }]
-              },
-              options: {
-                  scales: {
-                      y: {
-                          beginAtZero: true
-                      }
-                  }
-              }
-          });
+
+          updateChart(kriteriaNames, groupWeights);
 
           // Tambahkan class 'active' pada elemen dengan class 'card accordion-item'
           const accordionItem = document.querySelector('.card.accordion-item');

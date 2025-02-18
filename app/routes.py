@@ -24,6 +24,8 @@ import urllib.parse
 import urllib.request
 from functools import wraps
 from flask import session, redirect, url_for
+import skfuzzy as fuzz
+from scipy.optimize import minimize
 main_bp = Blueprint('main', __name__, template_folder='views/templates')
 
 # Konfigurasi
@@ -744,6 +746,9 @@ def final_simulate():
     try:
         data = request.get_json()
         id = data.get('idProyek')
+        metode = int(data.get('metode'))
+        print("Metode: ",metode)
+
         kriteria_skor = KriteriaSkor.query.filter_by(id_proyek=id).all()
 
         # Query data nama kriteria
@@ -768,10 +773,40 @@ def final_simulate():
         # Convert to NumPy array
         individual_weights = np.array(individual_weights, dtype=float)
         print("Individual weights:\n", individual_weights)
+
+        group_weights = 0
         
-        # Calculate group weights using geometric mean
-        group_weights = np.prod(individual_weights, axis=0) ** (1 / len(individual_weights))
-        group_weights = group_weights / np.sum(group_weights)  # Normalize
+        match (metode):
+            case 1:
+                print("Tes metode 1")
+                # Calculate group weights using geometric mean
+                group_weights = np.prod(individual_weights, axis=0) ** (1 / len(individual_weights))
+                group_weights = group_weights / np.sum(group_weights)  # Normalize
+            case 2:
+                print("Tes metode 2")
+                # Calculate Using Euclidean Distance Minimization / Distance-Based Aggregation
+                n_criteria = individual_weights.shape[1]
+
+                def objective(group_weights):
+                    return np.sum((individual_weights - group_weights) ** 2)
+                
+                constraints = [{'type': 'eq', 'fun': lambda w: np.sum(w) - 1}]  # Sum to 1
+                bounds = [(0, 1) for _ in range(n_criteria)]
+                
+                result = minimize(objective, np.ones(n_criteria) / n_criteria, bounds=bounds, constraints=constraints)
+                group_weights = result.x
+            case 3:
+                print("Tes metode 3")
+                # Calculate using
+                weights = individual_weights
+                l, m, u = np.min(weights, axis=0), np.mean(weights, axis=0), np.max(weights, axis=0)  # Lower, Middle, Upper
+                group_weights = fuzz.defuzzify.centroid(np.array([l, m, u]))
+            # comment: 
+        # end match
+
+        # # Calculate group weights using geometric mean
+        # group_weights = np.prod(individual_weights, axis=0) ** (1 / len(individual_weights))
+        # group_weights = group_weights / np.sum(group_weights)  # Normalize
         print("Group weights:\n", group_weights)
 
         # Zip nama_kriteria dengan group_weights
