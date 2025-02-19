@@ -77,13 +77,26 @@
         </div>
         <!-- end of Card Collapsible for Kriteria yang Dinilai-->
         <div class="card-footer">
-          <select name="metode" id="metode">Metode:
-            <option value="1">Geometric Mean Aggregation</option>
-            <option value="2">Distance-Based Aggregation</option>
-            <option value="3">Fuzzy BWM / Interval-Based Aggregation</option>
-          </select>
-          <button class="btn btn-primary btn-md simulate-btn" data-id="1">Simulasikan</button>&nbsp;
-          <button class="btn btn-danger btn-md endproject-btn" data-id="1">Akhiri Proyek</button>
+          <div class="row">
+            <div class="col-md-6">
+              <label style="color: black;" class="form-label">Metode:</label>
+              <select class="form-control" name="metode" id="metode" style="color: black;">
+                <option value="1">Geometric Mean Aggregation</option>
+                <option value="2">Distance-Based Aggregation</option>
+                <option value="3">Fuzzy BWM / Interval-Based Aggregation</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <div class="mt-4">
+                <button class="btn btn-primary btn-md simulate-btn" data-id="1">Simulasikan</button>&nbsp;
+                <button class="btn btn-danger btn-md endproject-btn" data-id="1">Akhiri Proyek</button>
+              </div>
+            </div>
+          </div>
+          <!-- <div class="row">
+            <button class="btn btn-primary btn-md simulate-btn" data-id="1">Simulasikan</button>&nbsp;
+            <button class="btn btn-danger btn-md endproject-btn" data-id="1">Akhiri Proyek</button>
+          </div> -->
         </div>
       </div>
     </div>

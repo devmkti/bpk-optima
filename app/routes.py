@@ -797,10 +797,19 @@ def final_simulate():
                 group_weights = result.x
             case 3:
                 print("Tes metode 3")
-                # Calculate using
+                # Calculate using Fuzzy BWM / Interval-Based Aggregation
                 weights = individual_weights
-                l, m, u = np.min(weights, axis=0), np.mean(weights, axis=0), np.max(weights, axis=0)  # Lower, Middle, Upper
-                group_weights = fuzz.defuzzify.centroid(np.array([l, m, u]))
+
+                l, m, u = np.min(weights, axis=0), np.mean(weights, axis=0), np.max(weights, axis=0)
+                aggregated_weights = []
+
+                for i in range(len(l)):
+                    x = np.array([l[i], m[i], u[i]])
+                    y = np.array([0, 1, 0])  # Representasi fungsi keanggotaan segitiga
+                    centroid = fuzz.defuzz(x, y, 'centroid')
+                    aggregated_weights.append(centroid)
+
+                group_weights =  np.array(aggregated_weights)
             # comment: 
         # end match
 
