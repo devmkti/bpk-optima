@@ -810,6 +810,24 @@ def final_simulate():
                     aggregated_weights.append(centroid)
 
                 group_weights =  np.array(aggregated_weights)
+            case 4:
+                print("Tes metode 4")
+                # Calculate using Fuzzy BWM / Interval-Based Aggregation
+                weights = individual_weights
+
+                l, m, u = np.min(weights, axis=0), np.mean(weights, axis=0), np.max(weights, axis=0)
+                aggregated_weights = []
+
+                for i in range(len(l)):
+                    x = np.array([l[i], m[i], u[i]])
+                    y = np.array([0, 1, 0])  # Membership function
+                    centroid = fuzz.defuzz(x, y, 'centroid')
+                    aggregated_weights.append(centroid)
+
+                aggregated_weights = np.array(aggregated_weights)
+
+                # **Normalisasi Bobot** (agar totalnya = 1)
+                group_weights = aggregated_weights / np.sum(aggregated_weights)
             # comment: 
         # end match
 
