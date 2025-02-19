@@ -76,33 +76,129 @@
           </div>
         </div>
         <!-- end of Card Collapsible for Kriteria yang Dinilai-->
-        <div class="card-footer">
-          <div class="row">
-            <div class="col-md-6">
-              <label style="color: black;" class="form-label">Metode:</label>
-              <select class="form-control" name="metode" id="metode" style="color: black;">
-                <option value="1">Geometric Mean Aggregation</option>
-                <option value="2">Distance-Based Aggregation</option>
-                <option value="3">Fuzzy BWM / Interval-Based Aggregation</option>
-                <option value="4">Fuzzy BWM / Interval-Based Aggregation (Norm)</option>
-              </select>
-            </div>
-            <div class="col-md-6">
-              <div class="mt-4">
-                <button class="btn btn-primary btn-md simulate-btn" data-id="1">Simulasikan</button>&nbsp;
-                <button class="btn btn-danger btn-md endproject-btn" data-id="1">Akhiri Proyek</button>
-              </div>
-            </div>
-          </div>
-          <!-- <div class="row">
-            <button class="btn btn-primary btn-md simulate-btn" data-id="1">Simulasikan</button>&nbsp;
-            <button class="btn btn-danger btn-md endproject-btn" data-id="1">Akhiri Proyek</button>
-          </div> -->
-        </div>
       </div>
     </div>
   </div>
   <!-- end WINDOWS 2 -->
+  <div class="card mb-4">
+    <div class="card-header">
+      <h6>3. METODE PERHITUNGAN</h6>
+      <div class="row">
+        <div class="col-md-6">
+          <label for="purpose" style="font-weight: bolder; color: black;">Metode:</label>
+          <select class="form-control" name="metode" id="metode" style="color: black;">
+            <option value="1">Geometric Mean Aggregation</option>
+            <option value="2">Distance-Based Aggregation</option>
+            <option value="3">Fuzzy BWM / Interval-Based Aggregation</option>
+            <option value="4">Fuzzy BWM / Interval-Based Aggregation (Norm)</option>
+          </select>
+        </div>
+        <div class="col-md-6">
+          <div class="mt-4">
+            <button class="btn btn-primary btn-md simulate-btn" data-id="1">Simulasikan</button>&nbsp;
+            <button class="btn btn-danger btn-md endproject-btn" data-id="1">Akhiri Proyek</button>
+          </div>
+        </div>
+      </div>
+      <div class="row mt-3">
+        <div id="geometric-mean-desc" style="display: block;">
+          <label for="title-description-method" id="title-description-method">
+            Geometric Mean Aggregation (GMA) adalah metode agregasi yang menghitung bobot kelompok dengan mengalikan bobot individu dan kemudian mengambil akar pangkat-n dari hasil perkalian tersebut.
+          </label>
+          <label for="title-description-method-purpose">
+            <label for="purpose" style="font-weight: bolder; color: black;">Tujuan:</label>
+            <ul>
+              <li>Menyeimbangkan perbedaan opini dari berbagai decision makers.</li>
+              <li>Menghindari pengaruh ekstrem dari decision maker tertentu (karena geometric mean cenderung tidak dipengaruhi oleh nilai ekstrem seperti arithmetic mean).</li>
+              <li>Cocok digunakan ketika bobot memiliki skala multiplikatif (misalnya, dalam AHP atau BWM yang memiliki sifat rasio).</li>
+            </ul>
+          </label>
+        </div>
+        <div id="dba-desc" style="display: none;">
+          <label for="title-description-method" id="title-description-method">
+            Distance-Based Aggregation (DBA) adalah metode agregasi yang mencari bobot kelompok dengan meminimalkan jarak antara bobot individu dari decision makers dan bobot akhir grup.
+          </label>
+          <label for="title-description-method-purpose">
+            <label for="purpose" style="font-weight: bolder; color: black;">Tujuan:</label>
+            <ul>
+              <li>Mencari solusi agregasi yang paling representatif dengan mempertimbangkan semua decision makers.</li>
+              <li>Menghindari bias dari satu decision maker tertentu, karena metode ini mencari solusi yang paling "dekat" dengan semua pendapat.</li>
+              <li>Cocok digunakan dalam sistem voting atau consensus decision-making, di mana kita ingin mendapatkan nilai yang paling merepresentasikan seluruh kelompok.</li>
+            </ul>
+          </label>
+        </div>
+        <div id="fuzzy-bwm-desc" style="display: none;">
+          <label for="title-description-method" id="title-description-method">
+            Fuzzy BWM adalah pengembangan dari Best Worst Method (BWM) yang memungkinkan bobot kriteria dinyatakan dalam bentuk Triangular Fuzzy Numbers (TFN).
+          </label>
+          <label for="title-description-method-purpose">
+            <label for="purpose" style="font-weight: bolder; color: black;">Tujuan:</label>
+            <ul>
+              <li>Menangani ketidakpastian dan ambiguitas dalam penilaian decision makers.</li>
+              <li>Memungkinkan fleksibilitas dalam ekspresi preferensi (karena nilai fuzzy lebih baik dalam menangkap ketidakpastian dibandingkan nilai crisp).</li>
+              <li>Cocok digunakan dalam keputusan yang kompleks dan tidak pasti, seperti proyek infrastruktur besar, pemilihan teknologi, dan strategi bisnis.</li>
+            </ul>
+          </label>
+        </div>
+        <div id="fuzzy-bwm-norm-desc" style="display: none;">
+          <label for="title-description-method" id="title-description-method">
+            Fuzzy BWM Normalisasi adalah pengembangan dari Best Worst Method (BWM) yang memungkinkan bobot kriteria dinyatakan dalam bentuk Triangular Fuzzy Numbers (TFN).
+          </label>
+          <label for="title-description-method-purpose">
+            <label for="purpose" style="font-weight: bolder; color: black;">Tujuan:</label>
+            <ul>
+              <li>Menangani ketidakpastian dan ambiguitas dalam penilaian decision makers.</li>
+              <li>Memungkinkan fleksibilitas dalam ekspresi preferensi (karena nilai fuzzy lebih baik dalam menangkap ketidakpastian dibandingkan nilai crisp).</li>
+              <li>Cocok digunakan dalam keputusan yang kompleks dan tidak pasti, seperti proyek infrastruktur besar, pemilihan teknologi, dan strategi bisnis.</li>
+            </ul>
+          </label>
+        </div>
+      </div>
+      <div class="row mt-3">
+        <label style="font-weight: bolder; color: black;">Ringkasan Perbandingan Metode</label>
+        <table class="table table-striped mt-2">
+          <thead style="background-color: #9CCC65;">
+            <th style="font-weight: bolder; color: black;">Metode</th>
+            <th style="font-weight: bolder; color: black;">Definisi</th>
+            <th style="font-weight: bolder; color: black;">Kelebihan</th>
+            <th style="font-weight: bolder; color: black;">Kekurangan</th>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="font-weight: bolder; color: #1B5E20;">Geometric Mean</td>
+              <td>Menggunakan akar pangkat-n dari hasil perkalian bobot individu.</td>
+              <td>Tidak terpengaruh nilai ekstrem, cocok untuk data rasio.</td>
+              <td>Tidak mempertimbangkan bobot decision makers secara individual.</td>
+            </tr>
+            <tr>
+              <td style="font-weight: bolder; color: #1B5E20;">Distance-Based</td>
+              <td>Mencari bobot yang paling dekat dengan semua individu berdasarkan Euclidean distance.</td>
+              <td>Representatif dan tidak bias ke satu decision maker tertentu.</td>
+              <td>Perhitungan bisa lebih kompleks, tergantung solver yang digunakan.</td>
+            </tr>
+            <tr>
+              <td style="font-weight: bolder; color: #1B5E20;">Fuzzy BWM</td>
+              <td>Menggunakan triangular fuzzy numbers untuk menangani ketidakpastian.</td>
+              <td>Cocok untuk keputusan yang kompleks dengan banyak ambiguitas.</td>
+              <td>ebih sulit diinterpretasikan dibanding metode crisp.</td>
+            </tr>
+            <tr>
+              <td style="font-weight: bolder; color: #1B5E20;">Fuzzy BWM Normalisasi</td>
+              <td>Menggunakan triangular fuzzy numbers untuk menangani ketidakpastian.
+                <br><br>Dalam konteks multi-criteria decision making (MCDM), normalisasi adalah proses mengubah bobot atau nilai agar memiliki skala yang lebih seragam, sering kali dalam rentang [0,1] atau agar totalnya menjadi 1.
+              </td>
+              <td>Cocok untuk keputusan yang kompleks dengan banyak ambiguitas.</td>
+              <td>ebih sulit diinterpretasikan dibanding metode crisp.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <!-- <div class="card-footer">
+      <button class="btn btn-primary btn-md simulate-btn" data-id="1">Simulasikan</button>&nbsp;
+      <button class="btn btn-danger btn-md endproject-btn" data-id="1">Akhiri Proyek</button>
+    </div> -->
+  </div>
   <!-- WINDOWS 3 -->
   <div class="card mb-4">
     <div class="card-header">
@@ -110,7 +206,7 @@
         <!-- Card Collapsible for CHART RESULT -->
         <div class="card accordion-item">
           <h2 class="accordion-header" id="headingResult">
-            <button type="button" class="accordion-button" data-bs-toggle="collapse" data-bs-target="#collapseResult" aria-expanded="true" aria-controls="collapseResult">3. RESULT</button>
+            <button type="button" class="accordion-button" data-bs-toggle="collapse" data-bs-target="#collapseResult" aria-expanded="true" aria-controls="collapseResult">4. HASIL</button>
           </h2>
           <!-- Looping Kriteria-->
           <div id="collapseResult" class="accordion-collapse collapse" data-bs-parent="#collapsibleSection">
@@ -285,6 +381,33 @@
         alert("Gagal memuat detail proyek. Silakan coba lagi.");
       });
     });
+
+    document.querySelector("#metode").addEventListener("change", function(ev) {
+      if(ev.currentTarget.value == 1){
+        document.getElementById("geometric-mean-desc").style.display = "block";
+        document.getElementById("dba-desc").style.display = "none";
+        document.getElementById("fuzzy-bwm-desc").style.display = "none";
+        document.getElementById("fuzzy-bwm-norm-desc").style.display = "none";
+      }
+      if(ev.currentTarget.value == 2){
+        document.getElementById("geometric-mean-desc").style.display = "none";
+        document.getElementById("dba-desc").style.display = "block";
+        document.getElementById("fuzzy-bwm-desc").style.display = "none";
+        document.getElementById("fuzzy-bwm-norm-desc").style.display = "none";
+      }
+      if(ev.currentTarget.value == 3){
+        document.getElementById("geometric-mean-desc").style.display = "none";
+        document.getElementById("dba-desc").style.display = "none";
+        document.getElementById("fuzzy-bwm-desc").style.display = "block";
+        document.getElementById("fuzzy-bwm-norm-desc").style.display = "none";
+      }
+      if(ev.currentTarget.value == 4){
+        document.getElementById("geometric-mean-desc").style.display = "none";
+        document.getElementById("dba-desc").style.display = "none";
+        document.getElementById("fuzzy-bwm-desc").style.display = "none";
+        document.getElementById("fuzzy-bwm-norm-desc").style.display = "block";
+      }
+    })
 
     document.querySelector(".simulate-btn").addEventListener("click", function (event) {
       const tbody = document.querySelector("#table-kriteria-bobot tbody");
