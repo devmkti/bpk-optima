@@ -19,7 +19,7 @@
                         <th>Jumlah Responden</th>
                         <th>Periode Mulai</th>
                         <th>Periode Selesai</th>
-                        <th>Aksi</th>
+                        <th width="25%">Aksi</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
@@ -127,10 +127,10 @@
                     data: null, // Kolom untuk tombol
                     orderable: false, // Nonaktifkan pengurutan untuk kolom ini
                     render: function (data, type, row) {
-                        return `<button class="btn btn-primary btn-sm detail-btn" data-id="${row.id}">Detail</button>
-                                <button class="btn btn-success btn-sm view-btn" data-id="${row.id}">View</button>
-                                <button class="btn btn-warning btn-sm edit-btn" data-id="${row.id}">Edit</button>
-                                <button class="btn btn-danger btn-sm hapus-btn" data-id="${row.id}">Hapus</button>`;
+                        return `<button class="btn btn-icon btn-outline-detail waves-effect btn-sm detail-btn" data-id="${row.id}" data-bs-toggle="tooltip" data-bs-placement="top" title="Detail"><i class="fa-solid fa-magnifying-glass"></i></button>
+                                <button class="btn btn-icon btn-outline-success waves-effect btn-sm view-btn" data-id="${row.id}" data-bs-toggle="tooltip" data-bs-placement="top" title="View"><i class="fa-solid fa-eye"></i></button>
+                                <button class="btn btn-icon btn-outline-warning waves-effect btn-sm edit-btn" data-id="${row.id}" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit"><i class="fa-solid fa-pen"></i></button>
+                                <button class="btn btn-icon btn-outline-danger waves-effect btn-sm hapus-btn" data-id="${row.id}" data-bs-toggle="tooltip" data-bs-placement="top" title="Delete"><i class="fa-solid fa-trash"></i></button>`;
                     }
                 },
             ],

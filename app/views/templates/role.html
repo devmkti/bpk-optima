@@ -104,9 +104,9 @@
                     orderable: false, // Nonaktifkan pengurutan untuk kolom ini
                     render: function (data, type, row) {
                         return `
-                         <button class="btn btn-primary btn-sm view-btn" data-bs-toggle="modal" data-bs-target="#editModal" 
-                                data-nip="${row.nip}" data-nama="${row.nama}" data-foto="${row.foto}" data-administrator="${row.administrator}">
-                            Edit
+                         <button class="btn btn-icon btn-outline-warning waves-effect btn-sm view-btn" data-bs-toggle="modal" data-bs-target="#editModal" 
+                                data-nip="${row.nip}" data-nama="${row.nama}" data-foto="${row.foto}" data-administrator="${row.administrator}" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
+                            <i class="fa-solid fa-pen"></i>
                         </button>
                        
                     `;
