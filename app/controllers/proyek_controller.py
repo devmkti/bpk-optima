@@ -33,8 +33,8 @@ def get_proyek():
             'deskripsi': p.deskripsi,
             'jumlah_kriteria': p.jumlah_kriteria,
             'jumlah_responden': p.jumlah_responden,
-            'periode_mulai': get_full_date(p.periode_mulai.strftime('%Y-%m-%d')) if p.periode_mulai else "-",
-            'periode_selesai': get_full_date(p.periode_selesai.strftime('%Y-%m-%d')) if p.periode_selesai else "-"
+            'periode_mulai': get_full_date(p.periode_mulai.strftime('%Y-%m-%d'), True) if p.periode_mulai else "-",
+            'periode_selesai': get_full_date(p.periode_selesai.strftime('%Y-%m-%d'), True) if p.periode_selesai else "-"
         }
         for p in proyek_data
     ]

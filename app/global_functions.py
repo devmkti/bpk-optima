@@ -22,7 +22,23 @@ def list_bulan():
         12: "Desember"
     }
 
-def get_full_date(time=""):
+def list_bulan_short():
+    return {
+        1: "Jan",
+        2: "Feb",
+        3: "Mar",
+        4: "Apr",
+        5: "Mei",
+        6: "Jun",
+        7: "Jul",
+        8: "Agu",
+        9: "Sep",
+        10: "Okt",
+        11: "Nov",
+        12: "Des"
+    }
+
+def get_full_date(time="", short=False):
     if time == "":
         return time
 
@@ -37,7 +53,10 @@ def get_full_date(time=""):
 
     # Format tanggal menjadi "j Nama_Bulan Y"
     day = time_obj.day
-    month = list_bulan().get(time_obj.month, "")
+    if(short):
+        month = list_bulan_short().get(time_obj.month, "")
+    else:
+        month = list_bulan().get(time_obj.month, "")
     year = time_obj.year
 
     return f"{day} {month} {year}"
