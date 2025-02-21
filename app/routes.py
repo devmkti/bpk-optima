@@ -6,6 +6,7 @@ from app.models.kriteria import Kriteria
 from app.models.partisipate import DetailPartisipasi1, DetailPartisipasi2, Pegawai
 from app.database import db
 from app.models.kriteria_skor import KriteriaSkor
+from app.models.simulasi import *
 # from app.global_functions import *
 
 from flask import Flask, render_template, request, redirect, url_for, flash
@@ -750,6 +751,8 @@ def final_simulate():
         print("Metode: ",metode)
 
         kriteria_skor = KriteriaSkor.query.filter_by(id_proyek=id).all()
+        tasksimulasi_list = TaskSimulasi.query.filter_by(id_proyek=id).all()
+        hasil = [task.to_dict() for task in tasksimulasi_list]
 
         # Query data nama kriteria
         kriteria = Kriteria.query.all()  # Mengambil semua kriteria
@@ -779,11 +782,17 @@ def final_simulate():
         match (metode):
             case 1:
                 print("Tes metode 1")
+                # Calculate group weights using arithmetic mean
+                group_weights = np.mean(individual_weights, axis=0) # Menghitung rata-rata di setiap kolom
+                group_weights = group_weights / np.sum(group_weights)  # Normalize
+
+            case 2:
+                print("Tes metode 2")
                 # Calculate group weights using geometric mean
                 group_weights = np.prod(individual_weights, axis=0) ** (1 / len(individual_weights))
                 group_weights = group_weights / np.sum(group_weights)  # Normalize
-            case 2:
-                print("Tes metode 2")
+            case 3:
+                print("Tes metode 3")
                 # Calculate Using Euclidean Distance Minimization / Distance-Based Aggregation
                 n_criteria = individual_weights.shape[1]
 
@@ -795,8 +804,8 @@ def final_simulate():
                 
                 result = minimize(objective, np.ones(n_criteria) / n_criteria, bounds=bounds, constraints=constraints)
                 group_weights = result.x
-            case 3:
-                print("Tes metode 3")
+            case 4:
+                print("Tes metode 4")
                 # Calculate using Fuzzy BWM / Interval-Based Aggregation
                 weights = individual_weights
 
@@ -810,8 +819,8 @@ def final_simulate():
                     aggregated_weights.append(centroid)
 
                 group_weights =  np.array(aggregated_weights)
-            case 4:
-                print("Tes metode 4")
+            case 5:
+                print("Tes metode 5")
                 # Calculate using Fuzzy BWM / Interval-Based Aggregation
                 weights = individual_weights
 
@@ -850,6 +859,7 @@ def final_simulate():
             "message": "Data simulasi berhasil disimpan!",
             "success":True,
             "data": [{"nama_kriteria": name, "bobot": weight} for name, weight in zipped_results],
+            "hasil": hasil,
             "group_weights_json": group_weights_json,
             "kriteria_names_json": kriteria_names_json
         }), 200
