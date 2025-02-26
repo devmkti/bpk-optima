@@ -3,6 +3,7 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy import TIMESTAMP, func
 from app.database import db
 import uuid
+from app.global_functions import *
 
 class TaskSimulasi(db.Model):
     __tablename__ = 'task_simulasi'
@@ -18,7 +19,7 @@ class TaskSimulasi(db.Model):
                 "nama_task": self.nama_task,
                 "nama_metode": self.nama_metode,
                 "id_proyek": str(self.id_proyek),
-                "tgl_simulasi": self.tgl_simulasi.isoformat() if self.tgl_simulasi else None,
+                "tgl_simulasi": get_full_date(self.tgl_simulasi.strftime('%Y-%m-%d')) + ' ' + self.tgl_simulasi.strftime('%H:%M:%S') if self.tgl_simulasi else None,
             }
 
 class HasilSimulasi(db.Model):

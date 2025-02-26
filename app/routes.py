@@ -748,6 +748,8 @@ def final_simulate():
         data = request.get_json()
         id = data.get('idProyek')
         metode = int(data.get('metode'))
+        nama_task = data.get('namaTask')
+        nama_metode = metode
         print("Metode: ",metode)
 
         kriteria_skor = KriteriaSkor.query.filter_by(id_proyek=id).all()
@@ -848,6 +850,31 @@ def final_simulate():
         # Zip nama_kriteria dengan group_weights
         kriteria_names = [kriteria_dict[k_id] for k_id in unique_kriteria]  # Ambil nama kriteria sesuai urutan id_kriteria
         zipped_results = list(zip(kriteria_names, group_weights))
+
+        # Zip id_kriteria dengan group_weights
+        kriteria_group_weights = list(zip(unique_kriteria, group_weights))
+
+        # Proses menyimpan data task simulasi
+        task = TaskSimulasi(
+            nama_task=nama_task,
+            nama_metode=nama_metode,
+            tgl_simulasi=datetime.datetime.now(),
+            id_proyek=id
+        )
+        db.session.add(task)
+        db.session.flush()
+        db.session.commit()
+
+        for kgw in kriteria_group_weights:
+            # Proses menyimpan data hasil simulasi / bobot
+            hs = HasilSimulasi(
+                id_task=task.id,
+                id_kriteria=kgw[0],
+                bobot=kgw[1]
+            )
+            db.session.add(hs)
+        db.session.flush()
+        db.session.commit()
 
         # Prepare group_weights and kriteria_names as JSON
         group_weights_json = [float(weight) for weight in group_weights]

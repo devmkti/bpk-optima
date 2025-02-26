@@ -96,8 +96,13 @@
           <div id="collapseMethods" class="accordion-collapse collapse show" data-bs-parent="#collapsibleSectionMethods">
             <div class="accordion-body">
               <div class="row">
-                <div class="col-md-6">
-                  <label for="purpose" style="font-weight: bolder; color: black">Metode:</label>
+                <div class="col-md-4">
+                  <label for="task-name" style="font-weight: bolder; color: black">Task Name</label>
+                  <input type="text" class="form-control" id="task-name" name="task_name"
+                      placeholder="Task Name" />
+                </div>
+                <div class="col-md-4">
+                  <label for="purpose" style="font-weight: bolder; color: black">Pilih Metode:</label>
                   <select class="form-control" name="metode" id="metode" style="color: black">
                     <option value="1">Arithmetic Mean Aggregation</option>
                     <option value="2">Geometric Mean Aggregation</option>
@@ -106,7 +111,7 @@
                     <option value="5">Fuzzy BWM / Interval-Based Aggregation (Norm)</option>
                   </select>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-4">
                   <div class="mt-4">
                     <button class="btn btn-primary btn-md simulate-btn" data-id="1">Simulasikan</button>&nbsp;
                     <button class="btn btn-danger btn-md endproject-btn" data-id="1">Akhiri Proyek</button>
@@ -349,14 +354,14 @@
   <!-- WINDOWS 5 -->
   <div class="card mb-4">
     <div class="card-header">
-      <div class="accordion" id="collapsibleSection">
+      <div class="accordion" id="collapsibleSectionHistory">
         <!-- Card Collapsible for CHART RESULT -->
         <div class="card accordion-item">
           <h2 class="accordion-header" id="headingResult">
             <button type="button" class="accordion-button" data-bs-toggle="collapse" data-bs-target="#collapseHistory" aria-expanded="true" aria-controls="collapseResult">5. SIMULATION HISTORY</button>
           </h2>
           <!-- Looping Kriteria-->
-          <div id="collapseHistory" class="accordion-collapse collapse" data-bs-parent="#collapsibleSection">
+          <div id="collapseHistory" class="accordion-collapse collapse" data-bs-parent="#collapsibleSectionHistory">
             <div class="accordion-body">
               <!-- <div class="md-6"> -->
               <div class="row mb-4">
@@ -369,7 +374,7 @@
                           <tr>
                             <!-- <th><b>No</b></th> -->
                             <th><b>Nama Task</b></th>
-                            <th><b>Nama Proyek</b></th>
+                            <th><b>Nama Metode</b></th>
                             <!-- <th><b>jumlah_Responden</b></th> -->
                             <th><b>Tanggal Simulasi</b></th>
                             <th><b>Aksi</b></th>
@@ -534,11 +539,12 @@
       event.preventDefault();
       idProyek = document.getElementById("id-proyek").value;
       metode = document.getElementById("metode").value;
+      task_name = document.getElementById("task-name").value;
 
       fetch("/api/final_simulate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ idProyek: idProyek, metode: metode }),
+        body: JSON.stringify({ idProyek: idProyek, metode: metode, namaTask:task_name }),
       })
         .then((response) => response.json())
         .then((data) => {
@@ -573,7 +579,21 @@
             for (let j = 0; j < data.hasil.length; j++) {
               const element = data.hasil[j]; // Akses setiap objek {nama_kriteria, bobot}
               const namaTask = element.nama_task;
-              const metode = element.nama_metode;
+              var metode = '';
+              switch (element.nama_metode) {
+                case '1':
+                  metode = 'Arithmetic Mean Aggregation'; break;
+                case '2':
+                  metode = 'Geometric Mean Aggregation'; break;
+                case '3':
+                  metode = 'Distance-Based Aggregation'; break;
+                case '4':
+                  metode = 'Fuzzy BWM / Interval-Based Aggregation'; break;
+                case '5':
+                  metode = 'Fuzzy BWM / Interval-Based Aggregation (Norm)'; break;
+                default:
+                  metode = ''; break;
+              }
               const tglsimulasi = element.tgl_simulasi;
 
               const row = document.createElement("tr");
@@ -641,6 +661,16 @@
               bsCollapse.hide(); // Tutup accordion dengan animasi
 
               collapseMethods.classList.remove("show");
+            }
+
+            const accordionItemSimulationHistory = document.querySelector("#collapsibleSectionHistory > .card.accordion-item");
+            if (accordionItemSimulationHistory) {
+              accordionItemSimulationHistory.classList.add("active");
+            }
+
+            const collapseHistory = document.getElementById("collapseHistory");
+            if (collapseHistory) {
+              collapseHistory.classList.add("show");
             }
           } else {
             alert("Terjadi kesalahan: " + data.message);
