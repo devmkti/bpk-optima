@@ -114,7 +114,7 @@
                 <div class="col-md-4">
                   <div class="mt-4">
                     <button class="btn btn-primary btn-md simulate-btn" data-id="1">Simulasikan</button>&nbsp;
-                    <button class="btn btn-danger btn-md endproject-btn" data-id="1">Akhiri Proyek</button>
+                    <!-- <button class="btn btn-danger btn-md endproject-btn" data-id="1">Akhiri Proyek</button> -->
                   </div>
                 </div>
               </div>
@@ -408,6 +408,7 @@
       </div>
       <div class="card-footer">
         <a href="/listProjectOwner" class="btn btn-secondary">Kembali</a>
+        <button class="btn btn-danger btn-md" id="endproject-btn" data-id="1">Akhiri Proyek</button>
       </div>
     </div>
     <!-- end of CHART RESULT-->
@@ -680,6 +681,38 @@
           console.error("Error:", error);
         });
     });
+
+    document.querySelector("#endproject-btn").addEventListener("click", function(ev){
+      const idProyek = document.getElementById("id-proyek").value;
+      fetch("/api/close_project", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ idProyek: idProyek }),
+      })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          Swal.fire({
+            title: 'Sukses!',
+            text: data.message,
+            icon: 'success',
+            showCancelButton: false,
+            confirmButtonText: 'OK',
+            customClass: {
+              confirmButton: 'btn btn-primary me-3 waves-effect waves-light'
+            },
+            buttonsStyling: true
+          }).then(function (result) {
+            if (result.value) {
+              window.location.href = `/listProjectOwner`;
+            }
+          });
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+    })
   });
 </script>
 {% endblock %}

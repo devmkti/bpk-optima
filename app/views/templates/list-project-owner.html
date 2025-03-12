@@ -17,8 +17,8 @@
                         <th width="20%">Nama Proyek</th>
                         <th width="20%">Deskripsi</th>
                         <th>Jumlah Responden</th>
-                        <th>Periode Mulai</th>
-                        <th>Periode Selesai</th>
+                        <th>Periode</th>
+                        <th>Status</th>
                         <th width="18%">Aksi</th>
                     </tr>
                 </thead>
@@ -118,10 +118,22 @@
                     data: "jumlah_responden"
                 },
                 {
-                    data: "periode_mulai"
+                    data: null, //periode
+                    orderable: false, // Nonaktifkan pengurutan untuk kolom ini
+                    render: function (data, type, row) {
+                        return row.periode_mulai + ' s/d ' + row.periode_selesai;
+                    },
                 },
                 {
-                    data: "periode_selesai"
+                    data: "status", // Kolom untuk tombol
+                    orderable: false, // Nonaktifkan pengurutan untuk kolom ini
+                    render: function (data, type, row) {
+                        if(row.status != null){
+                        return `<span class="badge bg-label-danger"><b>Closed</b></span>`;
+                        }else{
+                        return `<span class="badge bg-label-primary"><b>Open</b></span>`;
+                        }
+                    },
                 },
                 {
                     data: null, // Kolom untuk tombol

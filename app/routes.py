@@ -202,6 +202,7 @@ def update_role(nip):
     except Exception as e:
         db.session.rollback()  # Jika ada kesalahan, rollback transaksi
         return jsonify({"message": "Terjadi kesalahan", "error": str(e)}), 500
+
 # Route untuk melihat view proyek OWNER
 @main_bp.route('/proyek/<uuid:id>/view_po', methods=['GET'])
 def view_po(id):
@@ -897,3 +898,29 @@ def final_simulate():
         print(f"Error: {str(e)}") #Debugging log
         return jsonify({"message": f"Error: {str(e)}"}), 500
     # end try
+
+@main_bp.route('/api/close_project', methods=['POST'])
+def close_project():
+    try:
+        data = request.get_json()
+        id = data.get('idProyek')
+
+        proyek = Proyek.query.get_or_404(id)
+
+        if not proyek:
+            return jsonify({"message": "Data proyek tidak ditemukan"}), 404
+
+        # Update status proyek
+        proyek.status = 'closed'
+        db.session.commit()
+
+        return jsonify({
+            "message": "Akhiri proyek berhasil dan data telah berhasil disimpan!",
+            "success":True
+        }), 200
+    except Exception as e:
+        db.session.rollback()
+        db.session.remove()
+        print(f"Error: {str(e)}") #Debugging log
+        
+        return jsonify({"message": f"Error: {str(e)}"}), 500
