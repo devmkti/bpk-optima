@@ -113,7 +113,9 @@
                 </div>
                 <div class="col-md-4">
                   <div class="mt-4">
+                    {% if proyek.status == null %}
                     <button class="btn btn-primary btn-md simulate-btn" data-id="1">Simulasikan</button>&nbsp;
+                    {% endif %}
                     <!-- <button class="btn btn-danger btn-md endproject-btn" data-id="1">Akhiri Proyek</button> -->
                   </div>
                 </div>
@@ -344,9 +346,9 @@
           </div>
         </div>
       </div>
-      <div class="card-footer">
+      <!-- <div class="card-footer">
         <a href="/listProjectOwner" class="btn btn-secondary">Kembali</a>
-      </div>
+      </div> -->
     </div>
     <!-- end of CHART RESULT-->
   </div>
@@ -408,7 +410,9 @@
       </div>
       <div class="card-footer">
         <a href="/listProjectOwner" class="btn btn-secondary">Kembali</a>
+        {% if proyek.status == null %}
         <button class="btn btn-danger btn-md" id="endproject-btn" data-id="1">Akhiri Proyek</button>
+        {% endif %}
       </div>
     </div>
     <!-- end of CHART RESULT-->
