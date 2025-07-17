@@ -2,11 +2,13 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from app.database import db
+from app.config import Config
 
 def create_app():
     app = Flask(__name__,)
     app.static_folder = 'views/static'
-    app.config.from_object('app.config.Config')
+    # app.config.from_object('app.config.Config')
+    app.config.from_object(Config)
     
     # Initialize extensions
     db.init_app(app)
