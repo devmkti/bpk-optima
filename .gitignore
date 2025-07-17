@@ -13,5 +13,3 @@ __pycache__/
 .vscode/
 .idea/
 *.swp
-
-config.py
