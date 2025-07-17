@@ -6,7 +6,7 @@ from app.database import db
 def create_app():
     app = Flask(__name__,)
     app.static_folder = 'views/static'
-    app.config.from_object('config.Config')
+    app.config.from_object('app.config.Config')
     
     # Initialize extensions
     db.init_app(app)
