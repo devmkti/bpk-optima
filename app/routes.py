@@ -926,5 +926,5 @@ def close_project():
         return jsonify({"message": f"Error: {str(e)}"}), 500
     
 @main_bp.route("/tes")
-def index():
+def tes():
   return print('Waktu: ', datetime.datetime.now())
