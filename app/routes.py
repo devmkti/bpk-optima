@@ -924,3 +924,7 @@ def close_project():
         print(f"Error: {str(e)}") #Debugging log
         
         return jsonify({"message": f"Error: {str(e)}"}), 500
+    
+@main_bp.route("/tes")
+def index():
+  return print('Waktu: ', datetime.datetime.now())
